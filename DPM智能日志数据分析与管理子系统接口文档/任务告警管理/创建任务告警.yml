@@ -1,0 +1,75 @@
+info:
+  name: 创建任务告警
+  type: http
+  seq: 1
+  tags:
+    - 任务告警管理
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/task-alarms"
+  body:
+    type: json
+    data: |-
+      {
+        "taskId": 0,
+        "executionId": 0,
+        "alarmType": "",
+        "alarmLevel": "",
+        "alarmConfig": {},
+        "alarmMessage": "",
+        "alarmStatus": "",
+        "sentChannels": {},
+        "sentTime": "",
+        "readTime": "",
+        "readBy": 0,
+        "createdTime": ""
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/api/v1/task-alarms"
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "taskId": 0,
+            "executionId": 0,
+            "alarmType": "",
+            "alarmLevel": "",
+            "alarmConfig": {},
+            "alarmMessage": "",
+            "alarmStatus": "",
+            "sentChannels": {},
+            "sentTime": "",
+            "readTime": "",
+            "readBy": 0,
+            "createdTime": ""
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: "*/*"
+      body:
+        type: text
+        data: |-
+          {
+            "code": 0,
+            "reason": "",
+            "data": 0,
+            "timestamp": 0
+          }

@@ -1,0 +1,7 @@
+info:
+  name: 算法组件定义表_含通用算子和算子组_管理
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit

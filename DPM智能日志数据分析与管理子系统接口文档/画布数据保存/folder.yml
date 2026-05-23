@@ -1,0 +1,7 @@
+info:
+  name: 画布数据保存
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit

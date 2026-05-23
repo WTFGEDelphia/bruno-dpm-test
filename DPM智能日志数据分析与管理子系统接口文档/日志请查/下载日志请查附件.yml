@@ -1,0 +1,48 @@
+info:
+  name: 下载日志请查附件
+  type: http
+  seq: 16
+  tags:
+    - 日志请查
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/attachments/download"
+  params:
+    - name: attachmentId
+      value: ""
+      type: query
+      description: 需要下载的日志请查附件记录ID
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/api/v1/log-requests/attachments/download"
+      method: POST
+      params:
+        - name: attachmentId
+          value: ""
+          type: query
+          description: 需要下载的日志请查附件记录ID
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: "*/*"
+      body:
+        type: text
+        data: |-
+          [
+            ""
+          ]

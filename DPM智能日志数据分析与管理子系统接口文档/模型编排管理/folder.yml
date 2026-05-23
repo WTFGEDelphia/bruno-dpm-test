@@ -1,0 +1,7 @@
+info:
+  name: 模型编排管理
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit

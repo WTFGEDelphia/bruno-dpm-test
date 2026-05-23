@@ -1,0 +1,7 @@
+info:
+  name: 日志请查
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit

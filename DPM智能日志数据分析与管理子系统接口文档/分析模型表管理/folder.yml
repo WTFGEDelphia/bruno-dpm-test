@@ -1,0 +1,7 @@
+info:
+  name: 分析模型表管理
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit

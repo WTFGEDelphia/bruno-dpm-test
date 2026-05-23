@@ -1,0 +1,7 @@
+info:
+  name: 算法模板表管理
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit

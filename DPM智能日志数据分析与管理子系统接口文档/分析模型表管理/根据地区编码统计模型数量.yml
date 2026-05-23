@@ -1,0 +1,93 @@
+info:
+  name: 根据地区编码统计模型数量
+  type: http
+  seq: 10
+  tags:
+    - 分析模型表管理
+
+http:
+  method: POST
+  url: "{{baseUrl}}/analysisModel/areaModelCount"
+  body:
+    type: json
+    data: |-
+      {
+        "empty": false
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/analysisModel/areaModelCount"
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "empty": false
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: "*/*"
+      body:
+        type: text
+        data: |-
+          [
+            {
+              "modelCode": "",
+              "modelName": "",
+              "modelType": 0,
+              "description": "",
+              "ownerId": "",
+              "orgId": "",
+              "version": "",
+              "status": 0,
+              "algorithmTemplateId": 0,
+              "sourceTable": "",
+              "createdTime": "",
+              "updatedTime": "",
+              "createdBy": "",
+              "updatedBy": "",
+              "dataScopeRegType": [],
+              "dataScopeRegRegion": [],
+              "dataScopeStartDate": "",
+              "dataScopeEndDate": "",
+              "autoCreateTask": false,
+              "taskName": "",
+              "cronExpression": "",
+              "executorParam": "",
+              "executorHandler": "",
+              "id": 0,
+              "algorithmTemplateName": "",
+              "loginName": "",
+              "userName": "",
+              "orgName": "",
+              "alarmCount": 0,
+              "isSolidified": 0,
+              "taskStatus": "",
+              "taskId": 0,
+              "lastExecutionStatus": "",
+              "solidifyInfo": {
+                "cronExpression": "",
+                "cronDescription": "",
+                "dataScopeMode": "",
+                "dynamicDays": 0,
+                "retainHistory": false,
+                "dataScopeStartDate": "",
+                "dataScopeEndDate": ""
+              }
+            }
+          ]

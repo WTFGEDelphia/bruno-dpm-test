@@ -1,0 +1,134 @@
+info:
+  name: 查询日志请查详情
+  type: http
+  seq: 12
+  tags:
+    - 日志请查
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": 0
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/api/v1/log-requests/detail"
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "id": 0
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: "*/*"
+      body:
+        type: text
+        data: |-
+          {
+            "code": 0,
+            "reason": "",
+            "data": {
+              "id": 0,
+              "requestNo": "",
+              "applicantName": "",
+              "applicantOrgName": "",
+              "targetOrgName": "",
+              "validDays": 0,
+              "urgent": false,
+              "status": "",
+              "directiveStatus": "",
+              "statusDisplay": "",
+              "validPeriodDisplay": "",
+              "authorizationStartTime": "",
+              "authorizationEndTime": "",
+              "createdTime": "",
+              "requestReason": "",
+              "scopes": [
+                {
+                  "systemRange": "",
+                  "logStartTime": "",
+                  "logEndTime": ""
+                }
+              ],
+              "attachments": [
+                {
+                  "id": 0,
+                  "requestId": 0,
+                  "attachmentType": "",
+                  "fileName": "",
+                  "fileSize": 0,
+                  "uploaderName": "",
+                  "uploadTime": "",
+                  "deleted": false,
+                  "downloadable": false
+                }
+              ],
+              "authorization": {
+                "id": 0,
+                "authorizationSubjectId": "",
+                "authorizationSubjectName": "",
+                "authorizationType": "",
+                "statusDisplay": "",
+                "targetOrgName": "",
+                "urgent": false,
+                "pendingDirective": false,
+                "scopes": [
+                  {
+                    "systemRange": "",
+                    "logStartTime": "",
+                    "logEndTime": ""
+                  }
+                ],
+                "authorizationStartTime": "",
+                "authorizationEndTime": ""
+              },
+              "flowLogs": [
+                {
+                  "id": 0,
+                  "nodeName": "",
+                  "actionText": "",
+                  "conclusion": "",
+                  "opinion": "",
+                  "operatorName": "",
+                  "operatorOrgName": "",
+                  "directiveAttachmentIds": [],
+                  "directiveAttachments": [
+                    {
+                      "id": 0,
+                      "requestId": 0,
+                      "attachmentType": "",
+                      "fileName": "",
+                      "fileSize": 0,
+                      "uploaderName": "",
+                      "uploadTime": "",
+                      "deleted": false,
+                      "downloadable": false
+                    }
+                  ],
+                  "operationTime": ""
+                }
+              ]
+            },
+            "timestamp": 0
+          }

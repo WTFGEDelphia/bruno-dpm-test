@@ -1,0 +1,116 @@
+info:
+  name: 分页查询任务告警
+  type: http
+  seq: 4
+  tags:
+    - 任务告警管理
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/task-alarms/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "filter": {},
+        "sort": [],
+        "sortType": 0,
+        "id": 0,
+        "taskId": 0,
+        "executionId": 0,
+        "alarmType": "",
+        "alarmLevel": "",
+        "alarmConfig": {},
+        "alarmMessage": "",
+        "alarmStatus": "",
+        "sentChannels": {},
+        "startSentTime": "",
+        "endSentTime": "",
+        "startReadTime": "",
+        "endReadTime": "",
+        "readBy": 0,
+        "startCreatedTime": "",
+        "endCreatedTime": ""
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/api/v1/task-alarms/page"
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "pageNum": 1,
+            "pageSize": 10,
+            "filter": {},
+            "sort": [],
+            "sortType": 0,
+            "id": 0,
+            "taskId": 0,
+            "executionId": 0,
+            "alarmType": "",
+            "alarmLevel": "",
+            "alarmConfig": {},
+            "alarmMessage": "",
+            "alarmStatus": "",
+            "sentChannels": {},
+            "startSentTime": "",
+            "endSentTime": "",
+            "startReadTime": "",
+            "endReadTime": "",
+            "readBy": 0,
+            "startCreatedTime": "",
+            "endCreatedTime": ""
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: "*/*"
+      body:
+        type: text
+        data: |-
+          {
+            "code": 0,
+            "reason": "",
+            "data": {
+              "records": [
+                {
+                  "taskId": 0,
+                  "executionId": 0,
+                  "alarmType": "",
+                  "alarmLevel": "",
+                  "alarmConfig": {},
+                  "alarmMessage": "",
+                  "alarmStatus": "",
+                  "sentChannels": {},
+                  "sentTime": "",
+                  "readTime": "",
+                  "readBy": 0,
+                  "createdTime": "",
+                  "id": 0,
+                  "taskVisible": false
+                }
+              ],
+              "total": 0,
+              "current": 0,
+              "pageNum": 0,
+              "pageSize": 0
+            },
+            "timestamp": 0
+          }

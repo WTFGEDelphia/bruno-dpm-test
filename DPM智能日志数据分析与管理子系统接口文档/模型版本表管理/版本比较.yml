@@ -1,0 +1,59 @@
+info:
+  name: 版本比较
+  type: http
+  seq: 8
+  tags:
+    - 模型版本表管理
+
+http:
+  method: POST
+  url: "{{baseUrl}}/modelVersion/compare"
+  body:
+    type: json
+    data: |-
+      {
+        "versionId1": 0,
+        "versionId2": 0
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/modelVersion/compare"
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "versionId1": 0,
+            "versionId2": 0
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: "*/*"
+      body:
+        type: text
+        data: |-
+          {
+            "versionId1": 0,
+            "versionId2": 0,
+            "version1CreatedTime": "",
+            "version2CreatedTime": "",
+            "canvasDataDifferent": false,
+            "logicExpressionDifferent": false,
+            "generatedSqlDifferent": false,
+            "detailedDifferences": {}
+          }

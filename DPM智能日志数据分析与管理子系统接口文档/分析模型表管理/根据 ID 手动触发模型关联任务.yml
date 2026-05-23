@@ -1,0 +1,100 @@
+info:
+  name: 根据 ID 手动触发模型关联任务
+  type: http
+  seq: 4
+  tags:
+    - 分析模型表管理
+
+http:
+  method: POST
+  url: "{{baseUrl}}/analysisModel/run"
+  body:
+    type: json
+    data: |-
+      {
+        "id": 0
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/analysisModel/run"
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "id": 0
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: "*/*"
+      body:
+        type: text
+        data: |-
+          {
+            "model": {
+              "modelCode": "",
+              "modelName": "",
+              "modelType": 0,
+              "description": "",
+              "ownerId": "",
+              "orgId": "",
+              "version": "",
+              "status": 0,
+              "algorithmTemplateId": 0,
+              "sourceTable": "",
+              "createdTime": "",
+              "updatedTime": "",
+              "createdBy": "",
+              "updatedBy": "",
+              "dataScopeRegType": [],
+              "dataScopeRegRegion": [],
+              "dataScopeStartDate": "",
+              "dataScopeEndDate": "",
+              "autoCreateTask": false,
+              "taskName": "",
+              "cronExpression": "",
+              "executorParam": "",
+              "executorHandler": "",
+              "id": 0,
+              "algorithmTemplateName": "",
+              "loginName": "",
+              "userName": "",
+              "orgName": "",
+              "alarmCount": 0,
+              "isSolidified": 0,
+              "taskStatus": "",
+              "taskId": 0,
+              "lastExecutionStatus": "",
+              "solidifyInfo": {
+                "cronExpression": "",
+                "cronDescription": "",
+                "dataScopeMode": "",
+                "dynamicDays": 0,
+                "retainHistory": false,
+                "dataScopeStartDate": "",
+                "dataScopeEndDate": ""
+              }
+            },
+            "taskId": 0,
+            "taskName": "",
+            "xxlJobId": 0,
+            "triggerSuccess": false,
+            "message": ""
+          }
+
+docs: 兼容入口。即使关联调度任务已关闭调度或未处于 RUNNING（例如 STOPPED、COMPLETED），也允许手动触发一次执行，但不会恢复定时调度。
