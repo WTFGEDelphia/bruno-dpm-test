@@ -1,0 +1,11 @@
+info:
+  name: 18 附件文件边界
+  type: folder
+  seq: 18
+
+request:
+  auth: inherit
+
+docs: |-
+  P2 附件文件边界链路。抽样覆盖允许扩展名 doc/xlsx/pdf/png/jpg/csv 上传成功，同时覆盖空文件和缺少 file 参数被拒绝。
+  每条申请最多上传 3 个同类型附件，因此允许扩展名成功路径拆成两个申请。

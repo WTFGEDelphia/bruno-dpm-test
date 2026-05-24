@@ -1,0 +1,76 @@
+info:
+  name: 04 查询提交后详情
+  type: http
+  seq: 4
+  tags:
+    - 日志请查
+    - 自动化
+    - P0
+    - 草稿链路
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{requestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function body() {
+          return res.getBody();
+        }
+
+        function expectSuccess() {
+          expect(res.getStatus()).to.equal(200);
+          const json = body();
+          expect(json).to.be.an("object");
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          return json;
+        }
+
+        test("详情为待审核正式申请", () => {
+          const json = expectSuccess();
+          expect(json.data).to.be.an("object");
+          expect(json.data.id).to.equal(Number(bru.getVar("requestId")));
+          expect(json.data.status).to.equal("PENDING");
+          expect(json.data.requestNo).to.be.a("string").and.not.empty;
+          bru.setVar("requestNo", json.data.requestNo);
+        });
+
+        test("详情包含保存的调取范围", () => {
+          const data = body().data;
+          expect(data.scopes).to.be.an("array").that.is.not.empty;
+          expect(data.scopes[0].systemRange).to.equal(bru.getEnvVar("systemRange"));
+          expect(data.scopes[0].logStartTime).to.equal(bru.getEnvVar("logStartTime"));
+          expect(data.scopes[0].logEndTime).to.equal(bru.getEnvVar("logEndTime"));
+        });
+
+        test("提交产生用户可见流程日志", () => {
+          const flowLogs = body().data.flowLogs || [];
+          expect(flowLogs.some(item => item.actionText === "提交日志请查申请" || item.nodeName === "申请提交")).to.equal(true);
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data.requestNo
+        method: jsonq
+      variable:
+        name: requestNo
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

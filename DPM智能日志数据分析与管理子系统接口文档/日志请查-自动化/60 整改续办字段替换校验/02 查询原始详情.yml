@@ -1,0 +1,58 @@
+info:
+  name: 02 查询原始详情
+  type: http
+  seq: 2
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 整改续办
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{resubmitReplaceRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("原始申请为非紧急待审核且无授权", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          const data = json.data;
+          expect(data.id).to.equal(Number(bru.getVar("resubmitReplaceRequestId")));
+          expect(data.status).to.equal("PENDING");
+          expect(data.directiveStatus).to.equal("NONE");
+          expect(data.validDays).to.equal(30);
+          expect(data.urgent).to.equal(false);
+          expect(data.authorization || null).to.equal(null);
+          expect(data.requestNo).to.be.a("string").and.not.empty;
+          expect(data.scopes).to.be.an("array").with.length(1);
+          bru.setVar("resubmitReplaceRequestNo", data.requestNo);
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data.requestNo
+        method: jsonq
+      variable:
+        name: resubmitReplaceRequestNo
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

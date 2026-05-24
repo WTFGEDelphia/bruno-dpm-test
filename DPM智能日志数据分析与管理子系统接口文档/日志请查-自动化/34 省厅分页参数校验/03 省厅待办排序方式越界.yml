@@ -1,0 +1,54 @@
+info:
+  name: 03 省厅待办排序方式越界
+  type: http
+  seq: 3
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 省厅分页
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/province/todo/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "sort": ["createdTime"],
+        "sortType": 3,
+        "status": "PENDING"
+      }
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function expectProvincePageDenied(expectedText) {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json).to.be.an("object");
+          expect(json.code).to.not.equal(200);
+          const text = JSON.stringify(json);
+          const reason = String(json.reason || json.message || text);
+          expect(reason).to.contain(expectedText);
+          expect(text.toLowerCase()).to.not.contain("<html");
+          expect(text).to.not.contain("Whitelabel Error Page");
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+        }
+
+        test("省厅待办 sortType=3 被拒绝", () => {
+          expectProvincePageDenied("排序方式");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

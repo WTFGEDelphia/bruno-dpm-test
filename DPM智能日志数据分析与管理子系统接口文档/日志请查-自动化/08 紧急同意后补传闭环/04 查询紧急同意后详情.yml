@@ -1,0 +1,50 @@
+info:
+  name: 04 查询紧急同意后详情
+  type: http
+  seq: 4
+  tags:
+    - 日志请查
+    - 自动化
+    - P0
+    - 紧急审批
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{urgentRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("紧急同意后授权生效且待补充批示", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data.id).to.equal(Number(bru.getVar("urgentRequestId")));
+          expect(json.data.status).to.equal("COMPLETED");
+          expect(json.data.urgent).to.equal(true);
+          expect(json.data.directiveStatus).to.equal("PENDING");
+          expect(json.data.authorization).to.be.an("object");
+          expect(json.data.authorization.authorizationType).to.equal("LOG_READ");
+          expect(json.data.authorization.pendingDirective).to.equal(true);
+          expect(json.data.authorization.authorizationStartTime).to.be.a("string").and.not.empty;
+          expect(json.data.authorization.authorizationEndTime).to.be.a("string").and.not.empty;
+          bru.setVar("urgentAuthorizationStartTime", json.data.authorization.authorizationStartTime);
+          bru.setVar("urgentAuthorizationEndTime", json.data.authorization.authorizationEndTime);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

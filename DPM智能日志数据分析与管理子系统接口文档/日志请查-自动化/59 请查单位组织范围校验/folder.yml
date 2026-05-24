@@ -1,0 +1,11 @@
+info:
+  name: 59 请查单位组织范围校验
+  type: folder
+  seq: 59
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 请查单位组织范围校验链路。覆盖目标机构不存在、越出当前省级组织范围、机构状态异常时的业务拒绝。
+  真实环境运行前需在环境变量中配置 missingTargetOrgId、outOfScopeTargetOrgId、inactiveTargetOrgId。

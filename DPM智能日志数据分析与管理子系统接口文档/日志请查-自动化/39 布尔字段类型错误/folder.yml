@@ -1,0 +1,11 @@
+info:
+  name: 39 布尔字段类型错误
+  type: folder
+  seq: 39
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 布尔字段类型错误链路。覆盖 urgent 传入非布尔字符串时的统一错误。
+  创建、地市分页、省厅待办和导出分别取样；导出失败时不能返回 Excel 文件流。

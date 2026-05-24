@@ -1,0 +1,61 @@
+info:
+  name: 07 查询重提后详情
+  type: http
+  seq: 7
+  tags:
+    - 日志请查
+    - 自动化
+    - P0
+    - 驳回整改
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{rejectResubmitRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function body() {
+          return res.getBody();
+        }
+
+        test("驳回整改重提后同一申请回到 PENDING", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = body();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data.id).to.equal(Number(bru.getVar("rejectResubmitRequestId")));
+          expect(json.data.status).to.equal("PENDING");
+          expect(json.data.directiveStatus).to.equal("NONE");
+          expect(json.data.requestNo).to.equal(bru.getVar("rejectResubmitRequestNo"));
+          expect(json.data.requestReason).to.contain("已补充材料并整改重提");
+          expect(json.data.authorization || null).to.equal(null);
+          expect(JSON.stringify(json.data)).to.not.contain("forged-resubmit-account-should-be-ignored");
+          expect(JSON.stringify(json.data)).to.not.contain("forged-resubmit-org-should-be-ignored");
+        });
+
+        test("重提后流程日志保留驳回并追加整改节点", () => {
+          const flowLogs = body().data.flowLogs || [];
+          const text = JSON.stringify(flowLogs);
+          expect(text).to.contain("处置办理：不同意");
+          expect(text).to.contain("申请修改");
+          expect(text).to.contain("重新提交");
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

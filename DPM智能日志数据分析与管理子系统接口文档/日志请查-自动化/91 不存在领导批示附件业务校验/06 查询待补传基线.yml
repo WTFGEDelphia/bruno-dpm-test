@@ -1,0 +1,59 @@
+info:
+  name: 06 查询待补传基线
+  type: http
+  seq: 6
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 补传
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{missingDirectiveSupplementRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("待补传基线为已完成紧急待补传且授权有效", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const data = json.data;
+          expect(data.id).to.equal(Number(bru.getVar("missingDirectiveSupplementRequestId")));
+          expect(data.status).to.equal("COMPLETED");
+          expect(data.urgent).to.equal(true);
+          expect(data.directiveStatus).to.equal("PENDING");
+          expect(data.authorization).to.be.an("object");
+          expect(data.authorization.pendingDirective).to.equal(true);
+          expect(data.authorization.authorizationStartTime).to.be.a("string").and.not.empty;
+          expect(data.authorization.authorizationEndTime).to.be.a("string").and.not.empty;
+          bru.setVar("missingDirectiveAuthorizationStartTime", data.authorization.authorizationStartTime);
+          bru.setVar("missingDirectiveAuthorizationEndTime", data.authorization.authorizationEndTime);
+        });
+
+        test("待补传基线尚无成功补传流程日志", () => {
+          const data = res.getBody().data;
+          const supplementLogs = (data.flowLogs || []).filter(item =>
+            item.actionText === "处置办理：补充领导批示" || item.nodeName === "补传领导批示"
+          );
+          expect(supplementLogs).to.have.length(0);
+          expect(JSON.stringify(data)).to.not.contain("storagePath");
+          expect(JSON.stringify(data)).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

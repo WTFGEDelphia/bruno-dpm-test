@@ -1,0 +1,54 @@
+info:
+  name: 08 删除后再次上传成功
+  type: http
+  seq: 8
+  tags:
+    - 日志请查
+    - 自动化
+    - P2
+    - 附件
+    - 数量限制
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/attachments/upload?requestId={{attachmentLimitRequestId}}&attachmentType=APPLICATION"
+  body:
+    type: multipart-form
+    data:
+      - name: file
+        type: file
+        value:
+          - files/fixtures/application-attachment-replacement.csv
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("删除后再次上传 APPLICATION 附件成功", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data).to.be.a("number");
+          expect(json.data).to.be.greaterThan(0);
+          expect(json.data).to.not.equal(Number(bru.getVar("applicationLimitAttachment1Id")));
+          bru.setVar("applicationLimitReplacementAttachmentId", String(json.data));
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data
+        method: jsonq
+      variable:
+        name: applicationLimitReplacementAttachmentId
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

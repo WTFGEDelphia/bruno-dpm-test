@@ -1,0 +1,70 @@
+info:
+  name: 05 查询两个批示绑定详情
+  type: http
+  seq: 5
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 领导批示
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{multiDirectiveRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function expectedIds() {
+          return [
+            Number(bru.getVar("multiDirectiveFirstId")),
+            Number(bru.getVar("multiDirectiveSecondId"))
+          ];
+        }
+
+        test("当前附件列表展示两个领导批示", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const data = json.data;
+          expect(data.status).to.equal("COMPLETED");
+          expect(data.directiveStatus).to.equal("UPLOADED");
+          const directiveAttachments = (data.attachments || []).filter(item => item.attachmentType === "LEADER_DIRECTIVE");
+          const ids = directiveAttachments.map(item => item.id);
+          expectedIds().forEach(id => expect(ids).to.include(id));
+          expectedIds().forEach(id => {
+            const matched = directiveAttachments.find(item => item.id === id);
+            expect(matched.deleted).to.not.equal(true);
+            expect(matched.downloadable).to.not.equal(false);
+          });
+        });
+
+        test("审批流程日志绑定两个领导批示ID", () => {
+          const data = res.getBody().data;
+          const approved = (data.flowLogs || []).find(item => item.actionText === "处置办理：同意" || item.conclusion === "同意");
+          expect(approved, "审批流程日志应存在").to.exist;
+          expectedIds().forEach(id => {
+            expect(JSON.stringify(approved.directiveAttachmentIds || [])).to.contain(String(id));
+          });
+          const historyIds = (approved.directiveAttachments || []).map(item => item.id);
+          expectedIds().forEach(id => expect(historyIds).to.include(id));
+          const text = JSON.stringify(data);
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

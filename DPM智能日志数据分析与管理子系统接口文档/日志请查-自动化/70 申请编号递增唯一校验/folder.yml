@@ -1,0 +1,11 @@
+info:
+  name: 70 申请编号递增唯一校验
+  type: folder
+  seq: 70
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 申请编号递增唯一校验链路。连续创建两条正式申请，校验 requestNo 符合 RZQCyyyyMMddNNNN 格式、同日期前缀下唯一且流水不倒退。
+  该用例覆盖接口层连续创建的基本唯一性；高并发序列化仍应由后端单元/集成测试补充。

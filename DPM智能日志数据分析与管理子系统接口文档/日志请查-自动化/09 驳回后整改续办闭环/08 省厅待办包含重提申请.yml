@@ -1,0 +1,51 @@
+info:
+  name: 08 省厅待办包含重提申请
+  type: http
+  seq: 8
+  tags:
+    - 日志请查
+    - 自动化
+    - P0
+    - 驳回整改
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/province/todo/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "requestNo": "{{rejectResubmitRequestNo}}",
+        "status": "PENDING",
+        "urgent": false,
+        "targetOrgId": "{{targetOrgId}}"
+      }
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("省厅待办包含重提后的申请", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          const requestId = Number(bru.getVar("rejectResubmitRequestId"));
+          const records = json.data.records || [];
+          const matched = records.find(item => item.id === requestId);
+          expect(matched, "省厅待办应包含整改重提申请").to.exist;
+          expect(matched.status).to.equal("PENDING");
+          expect(matched.directiveStatus).to.equal("NONE");
+          expect(matched.requestNo).to.equal(bru.getVar("rejectResubmitRequestNo"));
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

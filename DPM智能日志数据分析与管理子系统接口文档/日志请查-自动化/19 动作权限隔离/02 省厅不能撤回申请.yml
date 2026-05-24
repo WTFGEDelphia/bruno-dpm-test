@@ -1,0 +1,49 @@
+info:
+  name: 02 省厅不能撤回申请
+  type: http
+  seq: 2
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 动作权限
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/withdraw"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{actionPermissionRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function bodyText() {
+          return JSON.stringify(res.getBody());
+        }
+
+        test("省厅账号撤回申请被拒绝", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.not.equal(200);
+          expect(json.reason || json.message || bodyText()).to.contain("仅申请人本人");
+        });
+
+        test("省厅撤回失败响应不泄露存储路径", () => {
+          const text = bodyText();
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

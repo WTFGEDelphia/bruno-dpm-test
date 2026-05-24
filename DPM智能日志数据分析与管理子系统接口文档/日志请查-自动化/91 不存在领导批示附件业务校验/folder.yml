@@ -1,0 +1,11 @@
+info:
+  name: 91 不存在领导批示附件业务校验
+  type: folder
+  seq: 91
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 不存在领导批示附件业务校验。覆盖审批同意和紧急待补传两个入口在 directiveAttachmentIds 引用不存在附件 ID 时必须拒绝。
+  失败后待审核申请仍保持 PENDING/NONE 且无授权，待补传申请仍保持 COMPLETED/PENDING、授权起止时间不变且不产生成功补传流程日志。

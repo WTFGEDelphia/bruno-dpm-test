@@ -1,0 +1,43 @@
+info:
+  name: 08 紧急同意形成已办
+  type: http
+  seq: 8
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 导出
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/approve"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{exportDoneRequestId}},
+        "decision": "同意",
+        "opinion": "紧急申请先同意用于省厅已办导出过滤",
+        "directiveAttachmentIds": []
+      }
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("紧急同意形成已办成功", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data).to.equal(true);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

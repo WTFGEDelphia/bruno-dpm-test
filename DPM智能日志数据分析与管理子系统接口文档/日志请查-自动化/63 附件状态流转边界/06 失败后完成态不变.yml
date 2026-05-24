@@ -1,0 +1,53 @@
+info:
+  name: 06 失败后完成态不变
+  type: http
+  seq: 6
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 附件
+    - 状态流转
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{attachmentStateRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("附件负向操作后完成态和授权不变", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          const data = json.data;
+          expect(data.id).to.equal(Number(bru.getVar("attachmentStateRequestId")));
+          expect(data.status).to.equal("COMPLETED");
+          expect(data.directiveStatus).to.equal("UPLOADED");
+          expect(data.authorization).to.be.an("object");
+          expect(data.authorization.authorizationType).to.equal("LOG_READ");
+          expect(data.authorization.pendingDirective).to.not.equal(true);
+          const attachments = data.attachments || [];
+          const directiveAttachments = attachments.filter(item => item.attachmentType === "LEADER_DIRECTIVE" && item.deleted !== true);
+          expect(directiveAttachments).to.have.length(1);
+          expect(String(directiveAttachments[0].id)).to.equal(String(bru.getVar("attachmentStateDirectiveId")));
+          expect(JSON.stringify(data)).to.not.contain("storagePath");
+          expect(JSON.stringify(data)).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,56 @@
+info:
+  name: 03 导出页面类型为数字
+  type: http
+  seq: 3
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 参数类型
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/export"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "pageType": 1
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function expectExportPageTypeDenied() {
+          expect(res.getStatus()).to.equal(200);
+          expect(String(res.getHeader("content-type") || "").toLowerCase()).to.not.contain("text/html");
+          const json = res.getBody();
+          expect(json).to.be.an("object");
+          expect(json.code).to.not.equal(200);
+          const text = JSON.stringify(json);
+          expect(text.toLowerCase()).to.not.contain("<html");
+          expect(text).to.not.contain("Whitelabel Error Page");
+          expect(text).to.not.contain("HttpMessageNotReadableException");
+          expect(text).to.not.contain("MismatchedInputException");
+          expect(text).to.not.contain("JsonMappingException");
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+          expect(String(res.getHeader("content-disposition") || "")).to.not.contain("attachment;");
+          expect(String(res.getHeader("content-type") || "")).to.not.contain("spreadsheetml.sheet");
+        }
+
+        test("导出 pageType 为数字返回统一错误且不返回文件流", () => {
+          expectExportPageTypeDenied();
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

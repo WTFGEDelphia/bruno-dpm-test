@@ -1,0 +1,46 @@
+info:
+  name: 04 申请人单位筛选命中
+  type: http
+  seq: 4
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 列表筛选
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/city/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "requestNo": "{{accountOrgFilterRequestNo}}",
+        "applicantOrgId": "{{applicantOrgId}}"
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("按当前申请人单位筛选命中本人申请", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const requestId = Number(bru.getVar("accountOrgFilterRequestId"));
+          const matched = (json.data.records || []).find(item => item.id === requestId);
+          expect(matched, "申请人单位筛选应命中当前申请").to.exist;
+          expect(matched.requestNo).to.equal(bru.getVar("accountOrgFilterRequestNo"));
+          expect(matched.status).to.equal("PENDING");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

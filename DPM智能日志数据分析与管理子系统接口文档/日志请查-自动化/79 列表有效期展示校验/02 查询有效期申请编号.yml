@@ -1,0 +1,53 @@
+info:
+  name: 02 查询有效期申请编号
+  type: http
+  seq: 2
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 列表
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{listPeriodRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("有效期申请审批前详情正确", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const data = json.data;
+          expect(data.id).to.equal(Number(bru.getVar("listPeriodRequestId")));
+          expect(data.status).to.equal("PENDING");
+          expect(data.validDays).to.equal(Number(bru.getVar("listPeriodValidDays")));
+          expect(data.requestNo).to.be.a("string").and.not.empty;
+          bru.setVar("listPeriodRequestNo", data.requestNo);
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data.requestNo
+        method: jsonq
+      variable:
+        name: listPeriodRequestNo
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -7,10 +7,10 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/api/v1/log-requests/attachments/upload"
+  url: "{{baseUrl}}/api/v1/log-requests/attachments/upload?requestId=8&attachmentType=APPLICATION"
   params:
     - name: requestId
-      value: ""
+      value: "8"
       type: query
       description: 日志请查申请ID
     - name: attachmentType
@@ -27,8 +27,8 @@ http:
     data:
       - name: file
         type: file
-        value: []
-        description: 上传文件，支持申请附件或领导批示附件
+        value:
+          - D:\MyProgram\xiling\DOC\BSC\BSC端口矩阵.xls
   auth:
     type: bearer
     token: "{{token}}"

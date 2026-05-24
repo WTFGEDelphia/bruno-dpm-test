@@ -1,0 +1,53 @@
+info:
+  name: 07 查询导出已办详情
+  type: http
+  seq: 7
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 导出
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{exportDoneRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("导出已办申请审批前为 PENDING", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data.id).to.equal(Number(bru.getVar("exportDoneRequestId")));
+          expect(json.data.status).to.equal("PENDING");
+          expect(json.data.urgent).to.equal(true);
+          expect(json.data.requestNo).to.be.a("string").and.not.empty;
+          bru.setVar("exportDoneRequestNo", json.data.requestNo);
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data.requestNo
+        method: jsonq
+      variable:
+        name: exportDoneRequestNo
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

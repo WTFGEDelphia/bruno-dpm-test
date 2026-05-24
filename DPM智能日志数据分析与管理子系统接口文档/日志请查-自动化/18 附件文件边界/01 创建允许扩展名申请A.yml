@@ -1,0 +1,61 @@
+info:
+  name: 01 创建允许扩展名申请A
+  type: http
+  seq: 1
+  tags:
+    - 日志请查
+    - 自动化
+    - P2
+    - 附件边界
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/create"
+  body:
+    type: json
+    data: |-
+      {
+        "targetOrgId": "{{targetOrgId}}",
+        "targetOrgName": "{{targetOrgName}}",
+        "validDays": {{validDays}},
+        "urgent": false,
+        "requestReason": "{{requestReason}}-附件文件边界A",
+        "scopes": [
+          {
+            "systemRange": "{{systemRange}}",
+            "logStartTime": "{{logStartTime}}",
+            "logEndTime": "{{logEndTime}}"
+          }
+        ]
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("创建允许扩展名申请 A 成功", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data).to.be.a("number");
+          bru.setVar("fileBoundaryRequestAId", String(json.data));
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data
+        method: jsonq
+      variable:
+        name: fileBoundaryRequestAId
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

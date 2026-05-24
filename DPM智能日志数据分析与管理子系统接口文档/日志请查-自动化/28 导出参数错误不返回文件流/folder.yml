@@ -1,0 +1,11 @@
+info:
+  name: 28 导出参数错误不返回文件流
+  type: folder
+  seq: 28
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 导出参数校验补充链路。导出接口成功响应是 Excel 二进制文件流，本组专门覆盖分页与排序参数错误时必须返回统一业务错误，且不能带 `attachment; filename=log-requests.xlsx` 或 Excel content-type。
+  覆盖 PageParam 的 @NotNull/@Max/@Min 约束，防止导出参数错误被误判为文件下载成功。

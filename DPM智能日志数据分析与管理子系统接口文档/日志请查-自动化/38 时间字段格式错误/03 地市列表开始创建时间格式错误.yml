@@ -1,0 +1,57 @@
+info:
+  name: 03 地市列表开始创建时间格式错误
+  type: http
+  seq: 3
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 时间格式
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/city/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "startCreatedTime": "2026/05/01 00:00:00"
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function expectTimeFormatDenied() {
+          expect(res.getStatus()).to.equal(200);
+          expect(String(res.getHeader("content-type") || "").toLowerCase()).to.not.contain("text/html");
+          const json = res.getBody();
+          expect(json).to.be.an("object");
+          expect(json.code).to.not.equal(200);
+          const text = JSON.stringify(json);
+          expect(text.toLowerCase()).to.not.contain("<html");
+          expect(text).to.not.contain("Whitelabel Error Page");
+          expect(text).to.not.contain("HttpMessageNotReadableException");
+          expect(text).to.not.contain("DateTimeParseException");
+          expect(text).to.not.contain("InvalidFormatException");
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+          if (json.data && typeof json.data === "object") {
+            expect(json.data).to.not.have.property("records");
+          }
+        }
+
+        test("地市列表 startCreatedTime 格式错误返回统一错误", () => {
+          expectTimeFormatDenied();
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

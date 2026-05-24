@@ -1,0 +1,47 @@
+info:
+  name: 04 部分字段提交失败后仍为草稿
+  type: http
+  seq: 4
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 草稿提交
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{partialDraftId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("提交失败后部分字段申请仍为草稿", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json).to.be.an("object");
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data.id).to.equal(Number(bru.getVar("partialDraftId")));
+          expect(json.data.status).to.equal("DRAFT");
+          expect(json.data.requestReason).to.equal("草稿提交前校验-部分字段");
+          expect(json.data.flowLogs || []).to.have.length(0);
+          const text = JSON.stringify(json.data);
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

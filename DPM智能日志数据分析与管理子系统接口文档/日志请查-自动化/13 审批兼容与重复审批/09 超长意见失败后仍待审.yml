@@ -1,0 +1,43 @@
+info:
+  name: 09 超长意见失败后仍待审
+  type: http
+  seq: 9
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 审批边界
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{approvalLongOpinionRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("超长办理意见失败后申请仍为 PENDING", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data.id).to.equal(Number(bru.getVar("approvalLongOpinionRequestId")));
+          expect(json.data.status).to.equal("PENDING");
+          expect(json.data.authorization || null).to.equal(null);
+          expect(JSON.stringify(json.data.flowLogs || [])).to.not.contain(bru.getEnvVar("longReasonPart1"));
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

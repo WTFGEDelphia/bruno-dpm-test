@@ -1,0 +1,43 @@
+info:
+  name: 09 删除后审批失败A仍待审
+  type: http
+  seq: 9
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 领导批示
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{directiveRuleRequestAId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("删除后批示审批失败后申请A仍为 PENDING", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data.id).to.equal(Number(bru.getVar("directiveRuleRequestAId")));
+          expect(json.data.status).to.equal("PENDING");
+          expect(json.data.directiveStatus).to.equal("NONE");
+          expect(json.data.authorization || null).to.equal(null);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

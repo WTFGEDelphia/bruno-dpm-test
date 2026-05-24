@@ -1,0 +1,52 @@
+info:
+  name: 02 上传申请附件
+  type: http
+  seq: 2
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 附件
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/attachments/upload?requestId={{attachmentRequestId}}&attachmentType=APPLICATION"
+  body:
+    type: multipart-form
+    data:
+      - name: file
+        type: file
+        value:
+          - files/fixtures/log-request-application.csv
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("上传申请附件成功并返回附件ID", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data).to.be.a("number");
+          expect(json.data).to.be.greaterThan(0);
+          bru.setVar("applicationAttachmentId", String(json.data));
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data
+        method: jsonq
+      variable:
+        name: applicationAttachmentId
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

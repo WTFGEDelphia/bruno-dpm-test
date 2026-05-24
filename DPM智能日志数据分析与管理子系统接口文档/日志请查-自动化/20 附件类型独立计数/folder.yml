@@ -1,0 +1,11 @@
+info:
+  name: 20 附件类型独立计数
+  type: folder
+  seq: 20
+
+request:
+  auth: inherit
+
+docs: |-
+  P2 附件类型独立计数链路。校验同一申请下 APPLICATION 与 LEADER_DIRECTIVE 分别计数：3 个 APPLICATION 后仍可上传 3 个 LEADER_DIRECTIVE，第 4 个 LEADER_DIRECTIVE 才被拒绝。
+  该链路用于防止实现误把“同类型最多 3 个”退化为“同申请总附件最多 3 个”。

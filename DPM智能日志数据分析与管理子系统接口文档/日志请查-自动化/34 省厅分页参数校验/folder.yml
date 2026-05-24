@@ -1,0 +1,11 @@
+info:
+  name: 34 省厅分页参数校验
+  type: folder
+  seq: 34
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 省厅待办/已办分页参数校验。第 25 组覆盖地市分页，本组补齐省厅两个列表入口的 PageParam 约束。
+  覆盖 pageNum、pageSize、sortType 的下界/上界和缺失场景，失败响应不能泄露本地路径或存储路径。

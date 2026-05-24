@@ -1,0 +1,61 @@
+info:
+  name: 06 整改续办缺少申请ID
+  type: http
+  seq: 6
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 动作参数
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/resubmit"
+  body:
+    type: json
+    data: |-
+      {
+        "targetOrgId": "{{targetOrgId}}",
+        "targetOrgName": "{{targetOrgName}}",
+        "validDays": {{validDays}},
+        "urgent": false,
+        "requestReason": "动作接口申请ID缺失-整改续办",
+        "scopes": [
+          {
+            "systemRange": "{{systemRange}}",
+            "logStartTime": "{{logStartTime}}",
+            "logEndTime": "{{logEndTime}}"
+          }
+        ]
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function expectMissingRequestId() {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json).to.be.an("object");
+          expect(json.code).to.not.equal(200);
+          const text = JSON.stringify(json);
+          expect(text).to.contain("申请ID");
+          expect(text.toLowerCase()).to.not.contain("<html");
+          expect(text).to.not.contain("Whitelabel Error Page");
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+          expect(json.data).to.not.equal(true);
+        }
+
+        test("整改续办缺少申请ID被统一拒绝", () => {
+          expectMissingRequestId();
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

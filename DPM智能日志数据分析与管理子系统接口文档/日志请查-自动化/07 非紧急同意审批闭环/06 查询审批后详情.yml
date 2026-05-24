@@ -1,0 +1,62 @@
+info:
+  name: 06 查询审批后详情
+  type: http
+  seq: 6
+  tags:
+    - 日志请查
+    - 自动化
+    - P0
+    - 审批闭环
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{approvalRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function body() {
+          return res.getBody();
+        }
+
+        test("审批后状态为已完成且批示已上传", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = body();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data.id).to.equal(Number(bru.getVar("approvalRequestId")));
+          expect(json.data.status).to.equal("COMPLETED");
+          expect(json.data.directiveStatus).to.equal("UPLOADED");
+          expect(json.data.authorization).to.be.an("object");
+          expect(json.data.authorization.authorizationType).to.equal("LOG_READ");
+          expect(json.data.authorization.pendingDirective).to.not.equal(true);
+          expect(json.data.authorization.scopes).to.be.an("array").that.is.not.empty;
+          expect(json.data.authorization.authorizationStartTime).to.be.a("string").and.not.empty;
+          expect(json.data.authorization.authorizationEndTime).to.be.a("string").and.not.empty;
+        });
+
+        test("审批流程日志关联领导批示附件", () => {
+          const directiveAttachmentId = Number(bru.getVar("directiveAttachmentId"));
+          const flowLogs = body().data.flowLogs || [];
+          const approved = flowLogs.find(item => item.actionText === "处置办理：同意" || item.conclusion === "同意");
+          expect(approved, "流程日志应包含同意审批节点").to.exist;
+          expect(JSON.stringify(approved.directiveAttachmentIds || [])).to.contain(String(directiveAttachmentId));
+          expect(JSON.stringify(approved)).to.not.contain("storagePath");
+          expect(JSON.stringify(approved)).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

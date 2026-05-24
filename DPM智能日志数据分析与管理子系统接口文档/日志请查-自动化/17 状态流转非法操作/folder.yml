@@ -1,0 +1,11 @@
+info:
+  name: 17 状态流转非法操作
+  type: folder
+  seq: 17
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 状态流转非法操作链路。覆盖 PENDING 不能作废/重提、WITHDRAWN 不能重复撤回、VOIDED 不能撤回/重提。
+  每个负向操作后回查状态，确认非法操作没有改变申请状态或追加错误流程日志。

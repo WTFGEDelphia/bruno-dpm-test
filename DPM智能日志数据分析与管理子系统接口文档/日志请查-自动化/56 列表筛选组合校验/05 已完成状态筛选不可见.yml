@@ -1,0 +1,44 @@
+info:
+  name: 05 已完成状态筛选不可见
+  type: http
+  seq: 5
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 列表筛选
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/city/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "requestNo": "{{filterComboRequestNo}}",
+        "status": "COMPLETED"
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("按相反状态筛选不能命中当前待审核申请", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const requestId = Number(bru.getVar("filterComboRequestId"));
+          const records = json.data.records || [];
+          expect(records.find(item => item.id === requestId)).to.not.exist;
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

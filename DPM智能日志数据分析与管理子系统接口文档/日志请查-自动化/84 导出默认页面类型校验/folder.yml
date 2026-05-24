@@ -1,0 +1,10 @@
+info:
+  name: 84 导出默认页面类型校验
+  type: folder
+  seq: 84
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 导出默认页面类型校验。覆盖 /export 不传 pageType 时默认按 CITY 地市列表权限导出；与显式 CITY 导出使用同一筛选条件时，返回 Excel 文件流且体积一致。

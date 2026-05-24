@@ -1,0 +1,7 @@
+info:
+  name: 登录登出
+  type: folder
+  seq: 19
+
+request:
+  auth: inherit

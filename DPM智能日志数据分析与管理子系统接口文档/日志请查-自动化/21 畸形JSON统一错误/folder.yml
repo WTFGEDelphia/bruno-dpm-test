@@ -1,0 +1,11 @@
+info:
+  name: 21 畸形JSON统一错误
+  type: folder
+  seq: 21
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 请求体格式错误链路。对日志请查核心 JSON 接口发送 Content-Type 为 application/json 但无法解析的请求体，校验后端返回统一 Result 错误，而不是框架默认错误页、异常类名或本地路径。
+  覆盖 LR-P1-113：畸形 JSON 必须被统一异常处理器兜底。

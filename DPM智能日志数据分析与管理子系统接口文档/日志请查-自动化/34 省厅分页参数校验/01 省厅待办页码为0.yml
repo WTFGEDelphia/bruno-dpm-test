@@ -1,0 +1,52 @@
+info:
+  name: 01 省厅待办页码为0
+  type: http
+  seq: 1
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 省厅分页
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/province/todo/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 0,
+        "pageSize": 10,
+        "status": "PENDING"
+      }
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function expectProvincePageDenied(expectedText) {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json).to.be.an("object");
+          expect(json.code).to.not.equal(200);
+          const text = JSON.stringify(json);
+          const reason = String(json.reason || json.message || text);
+          expect(reason).to.contain(expectedText);
+          expect(text.toLowerCase()).to.not.contain("<html");
+          expect(text).to.not.contain("Whitelabel Error Page");
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+        }
+
+        test("省厅待办 pageNum=0 被拒绝", () => {
+          expectProvincePageDenied("页码");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

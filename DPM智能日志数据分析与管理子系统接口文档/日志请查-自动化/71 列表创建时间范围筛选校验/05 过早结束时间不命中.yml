@@ -1,0 +1,44 @@
+info:
+  name: 05 过早结束时间不命中
+  type: http
+  seq: 5
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 列表筛选
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/city/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "requestNo": "{{createdRangeRequestNo}}",
+        "endCreatedTime": "2000-01-01 00:00:00"
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("过早结束时间不能命中当前申请", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const requestId = Number(bru.getVar("createdRangeRequestId"));
+          const records = json.data.records || [];
+          expect(records.find(item => item.id === requestId)).to.not.exist;
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

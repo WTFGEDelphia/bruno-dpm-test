@@ -1,0 +1,59 @@
+info:
+  name: 01 审批附件ID为字符串
+  type: http
+  seq: 1
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 参数类型
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/approve"
+  body:
+    type: json
+    data: |-
+      {
+        "id": 1,
+        "decision": "同意",
+        "opinion": "领导批示附件ID类型错误-审批字符串元素",
+        "directiveAttachmentIds": [
+          "not-a-number"
+        ]
+      }
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function expectDirectiveIdsTypeDenied() {
+          expect(res.getStatus()).to.equal(200);
+          expect(String(res.getHeader("content-type") || "").toLowerCase()).to.not.contain("text/html");
+          const json = res.getBody();
+          expect(json).to.be.an("object");
+          expect(json.code).to.not.equal(200);
+          const text = JSON.stringify(json);
+          expect(text.toLowerCase()).to.not.contain("<html");
+          expect(text).to.not.contain("Whitelabel Error Page");
+          expect(text).to.not.contain("HttpMessageNotReadableException");
+          expect(text).to.not.contain("InvalidFormatException");
+          expect(text).to.not.contain("MismatchedInputException");
+          expect(text).to.not.contain("NumberFormatException");
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+          expect(json.data).to.not.equal(true);
+        }
+
+        test("审批 directiveAttachmentIds 字符串元素返回统一错误", () => {
+          expectDirectiveIdsTypeDenied();
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

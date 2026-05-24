@@ -1,0 +1,47 @@
+info:
+  name: 12 作废后非法操作状态不变
+  type: http
+  seq: 12
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 状态流转
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{stateGuardRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("作废后非法操作没有改变 VOIDED 状态或追加错误日志", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data.status).to.equal("VOIDED");
+          expect(json.data.requestNo).to.equal(bru.getVar("stateGuardRequestNo"));
+          const flowLogs = json.data.flowLogs || [];
+          const voidLogs = flowLogs.filter(item => item.actionText === "作废日志请查申请" || item.nodeName === "申请作废");
+          const withdrawLogs = flowLogs.filter(item => item.actionText === "撤回日志请查申请" || item.nodeName === "申请撤回");
+          expect(voidLogs).to.have.length(1);
+          expect(withdrawLogs).to.have.length(1);
+          expect(JSON.stringify(flowLogs)).to.not.contain("作废后非法重提");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

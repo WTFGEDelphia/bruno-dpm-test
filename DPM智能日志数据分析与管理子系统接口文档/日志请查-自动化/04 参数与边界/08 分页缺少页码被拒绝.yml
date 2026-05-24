@@ -1,0 +1,48 @@
+info:
+  name: 08 分页缺少页码被拒绝
+  type: http
+  seq: 8
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 参数边界
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/city/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageSize": 10,
+        "status": "PENDING"
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function expectBusinessDenied() {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.not.equal(200);
+          const text = JSON.stringify(json);
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+          return json;
+        }
+
+        test("分页缺少页码被拒绝", () => {
+          const json = expectBusinessDenied();
+          expect(json.reason).to.contain("页码");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

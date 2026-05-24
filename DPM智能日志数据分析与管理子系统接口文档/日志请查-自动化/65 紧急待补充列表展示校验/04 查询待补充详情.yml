@@ -1,0 +1,52 @@
+info:
+  name: 04 查询待补充详情
+  type: http
+  seq: 4
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 紧急审批
+    - 展示
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{urgentPendingDisplayRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("详情展示已完成紧急待补充且授权有效", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const data = json.data;
+          expect(data.status).to.equal("COMPLETED");
+          expect(data.directiveStatus).to.equal("PENDING");
+          expect(data.statusDisplay).to.equal("已完成·紧急·待补充");
+          expect(data.authorization).to.be.an("object");
+          expect(data.authorization.authorizationType).to.equal("LOG_READ");
+          expect(data.authorization.pendingDirective).to.equal(true);
+          expect(data.authorization.statusDisplay).to.equal("有效，待补充领导批示");
+          expect(JSON.stringify(data)).to.not.contain("暂存");
+          expect(JSON.stringify(data)).to.not.contain("已撤销");
+          expect(JSON.stringify(data)).to.not.contain("撤销");
+          expect(JSON.stringify(data)).to.not.contain("storagePath");
+          expect(JSON.stringify(data)).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

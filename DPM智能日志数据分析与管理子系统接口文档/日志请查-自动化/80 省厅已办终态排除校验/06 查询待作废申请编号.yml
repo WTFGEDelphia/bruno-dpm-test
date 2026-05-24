@@ -1,0 +1,51 @@
+info:
+  name: 06 查询待作废申请编号
+  type: http
+  seq: 6
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 省厅列表
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{doneExcludeVoidRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("待作废申请初始为待审核", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const data = json.data;
+          expect(data.status).to.equal("PENDING");
+          expect(data.requestNo).to.be.a("string").and.not.empty;
+          bru.setVar("doneExcludeVoidRequestNo", data.requestNo);
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data.requestNo
+        method: jsonq
+      variable:
+        name: doneExcludeVoidRequestNo
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

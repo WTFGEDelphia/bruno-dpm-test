@@ -1,0 +1,11 @@
+info:
+  name: 56 列表筛选组合校验
+  type: folder
+  seq: 56
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 列表筛选组合校验链路。创建一条紧急待审核申请后，验证 requestNo、status、urgent、targetOrgId 的正向和反向筛选。
+  用例聚焦查询语义，不依赖导出或审批状态变化。

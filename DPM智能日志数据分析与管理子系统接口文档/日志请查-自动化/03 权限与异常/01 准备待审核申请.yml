@@ -1,0 +1,72 @@
+info:
+  name: 01 准备待审核申请
+  type: http
+  seq: 1
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 权限
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/create"
+  body:
+    type: json
+    data: |-
+      {
+        "targetOrgId": "{{targetOrgId}}",
+        "targetOrgName": "{{targetOrgName}}",
+        "validDays": {{validDays}},
+        "urgent": false,
+        "requestReason": "{{requestReason}}-权限隔离基线",
+        "scopes": [
+          {
+            "systemRange": "{{systemRange}}",
+            "logStartTime": "{{logStartTime}}",
+            "logEndTime": "{{logEndTime}}"
+          }
+        ]
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function body() {
+          return res.getBody();
+        }
+
+        function expectSuccess() {
+          expect(res.getStatus()).to.equal(200);
+          const json = body();
+          expect(json).to.be.an("object");
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          return json;
+        }
+
+        test("准备待审核申请成功", () => {
+          const json = expectSuccess();
+          expect(json.data).to.be.a("number");
+          expect(json.data).to.be.greaterThan(0);
+          bru.setVar("securityRequestId", String(json.data));
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data
+        method: jsonq
+      variable:
+        name: securityRequestId
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

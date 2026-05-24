@@ -1,0 +1,11 @@
+info:
+  name: 23 允许扩展名补充
+  type: folder
+  seq: 23
+
+request:
+  auth: inherit
+
+docs: |-
+  P2 允许扩展名补充链路。第 18 组已覆盖 doc/xlsx/pdf/png/jpg/csv，本组补齐 docx/xls/jpeg 三个允许后缀，防止允许清单回归。
+  由于同一申请同类型最多 3 个附件，本组正好使用一条新申请上传三个 APPLICATION 附件。

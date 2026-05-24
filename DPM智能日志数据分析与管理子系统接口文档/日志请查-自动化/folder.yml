@@ -1,0 +1,12 @@
+info:
+  name: 日志请查-自动化
+  type: folder
+  seq: 100
+
+request:
+  auth: inherit
+
+docs: |-
+  日志请查自动化场景集合。原始 OpenAPI 导入目录保持不动，本目录只放可运行的业务链路用例。
+  当前覆盖草稿完整提交、正式申请生命周期等 P0 主链路。
+  真实 token、账号密码、Cookie 不应写入集合文件，请通过环境变量或命令行 --env-var 注入。

@@ -1,0 +1,65 @@
+info:
+  name: 02 草稿保存结束时间格式错误
+  type: http
+  seq: 2
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 时间格式
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/draft/update"
+  body:
+    type: json
+    data: |-
+      {
+        "id": 1,
+        "targetOrgId": "{{targetOrgId}}",
+        "targetOrgName": "{{targetOrgName}}",
+        "validDays": {{validDays}},
+        "urgent": false,
+        "requestReason": "时间字段格式错误-草稿保存",
+        "scopes": [
+          {
+            "systemRange": "{{systemRange}}",
+            "logStartTime": "{{logStartTime}}",
+            "logEndTime": "2026-05-02T00:00:00"
+          }
+        ]
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function expectTimeFormatDenied() {
+          expect(res.getStatus()).to.equal(200);
+          expect(String(res.getHeader("content-type") || "").toLowerCase()).to.not.contain("text/html");
+          const json = res.getBody();
+          expect(json).to.be.an("object");
+          expect(json.code).to.not.equal(200);
+          const text = JSON.stringify(json);
+          expect(text.toLowerCase()).to.not.contain("<html");
+          expect(text).to.not.contain("Whitelabel Error Page");
+          expect(text).to.not.contain("HttpMessageNotReadableException");
+          expect(text).to.not.contain("DateTimeParseException");
+          expect(text).to.not.contain("InvalidFormatException");
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+          expect(json.data).to.not.equal(true);
+        }
+
+        test("草稿保存 logEndTime 格式错误返回统一错误", () => {
+          expectTimeFormatDenied();
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,50 @@
+info:
+  name: 02 非紧急同意缺批示被拒绝
+  type: http
+  seq: 2
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 审批规则
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/approve"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{approvalRuleRequestId}},
+        "decision": "同意",
+        "opinion": "同意办理但未提供领导批示",
+        "directiveAttachmentIds": []
+      }
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function expectBusinessDenied() {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.not.equal(200);
+          const text = JSON.stringify(json);
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+          return json;
+        }
+
+        test("非紧急同意缺批示被拒绝", () => {
+          const json = expectBusinessDenied();
+          expect(json.reason).to.contain("领导批示");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

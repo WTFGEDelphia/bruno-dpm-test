@@ -1,0 +1,44 @@
+info:
+  name: 05 负向后仍待审
+  type: http
+  seq: 5
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 状态流转
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{stateGuardRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("待审核非法操作后状态仍为 PENDING", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data.status).to.equal("PENDING");
+          expect(json.data.requestNo).to.equal(bru.getVar("stateGuardRequestNo"));
+          const text = JSON.stringify(json.data.flowLogs || []);
+          expect(text).to.not.contain("作废日志请查申请");
+          expect(text).to.not.contain("重新提交");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,39 @@
+info:
+  name: 06 删除有意义草稿
+  type: http
+  seq: 6
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 草稿
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/draft/delete"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{emptyDraftListId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("清理有意义草稿成功", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(json.data).to.equal(true);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,33 @@
+info:
+  name: 06 申请附件仍可下载
+  type: http
+  seq: 6
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 附件权限
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/attachments/download?attachmentId={{provinceApplicationAttachmentId}}"
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("省厅维护失败后申请人仍可下载原申请附件", () => {
+          expect(res.getStatus()).to.equal(200);
+          expect(String(res.getHeader("content-disposition") || "")).to.contain("attachment;");
+          expect(String(res.getHeader("content-disposition") || "")).to.contain("application-attachment-3.csv");
+          expect(res.getSize().body).to.be.greaterThan(0);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

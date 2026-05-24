@@ -1,0 +1,48 @@
+info:
+  name: 03 查询大写附件详情
+  type: http
+  seq: 3
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 附件
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{uppercaseAttachmentRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("详情展示大写扩展名附件且不泄露存储路径", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const attachmentId = Number(bru.getVar("uppercaseAttachmentId"));
+          const matched = (json.data.attachments || []).find(item => item.id === attachmentId);
+          expect(matched, "大写扩展名附件应在当前附件列表").to.exist;
+          expect(matched.attachmentType).to.equal("APPLICATION");
+          expect(matched.fileName).to.equal("uppercase-attachment.CSV");
+          expect(matched.deleted).to.not.equal(true);
+          expect(matched.downloadable).to.not.equal(false);
+          const text = JSON.stringify(json.data);
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

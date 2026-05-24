@@ -1,0 +1,11 @@
+info:
+  name: 29 主体字段防伪造
+  type: folder
+  seq: 29
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 主体字段防伪造链路。创建申请时故意提交伪造的 applicantAccountId、applicantOrgId 和 targetOrgName，后续通过详情与地市列表确认服务端没有信任客户端主体字段。
+  运行结束会撤回并作废该申请，减少真实环境残留的待审核数据。

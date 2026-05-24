@@ -1,0 +1,44 @@
+info:
+  name: 15 申请人不能补传领导批示
+  type: http
+  seq: 15
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 领导批示
+    - 权限
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/directive/supplement"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{directiveRuleCompletedRequestId}},
+        "directiveAttachmentIds": [{{directiveRuleCompletedAttachmentId}}]
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("申请人补传领导批示被拒绝", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.not.equal(200);
+          expect(json.reason).to.contain("无权");
+          const text = JSON.stringify(json);
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

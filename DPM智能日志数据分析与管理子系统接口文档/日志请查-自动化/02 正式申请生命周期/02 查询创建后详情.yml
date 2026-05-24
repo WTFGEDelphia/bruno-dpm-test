@@ -1,0 +1,73 @@
+info:
+  name: 02 查询创建后详情
+  type: http
+  seq: 2
+  tags:
+    - 日志请查
+    - 自动化
+    - P0
+    - 生命周期
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{lifecycleRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function body() {
+          return res.getBody();
+        }
+
+        function expectSuccess() {
+          expect(res.getStatus()).to.equal(200);
+          const json = body();
+          expect(json).to.be.an("object");
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          return json;
+        }
+
+        test("创建后为待审核正式申请", () => {
+          const json = expectSuccess();
+          expect(json.data).to.be.an("object");
+          expect(json.data.id).to.equal(Number(bru.getVar("lifecycleRequestId")));
+          expect(json.data.status).to.equal("PENDING");
+          expect(json.data.requestNo).to.be.a("string").and.not.empty;
+          bru.setVar("lifecycleRequestNo", json.data.requestNo);
+        });
+
+        test("服务端回填申请主体与调取范围", () => {
+          const data = body().data;
+          expect(data.scopes).to.be.an("array").that.is.not.empty;
+          expect(data.scopes[0].systemRange).to.equal(bru.getEnvVar("systemRange"));
+          expect(data.scopes[0].logStartTime).to.equal(bru.getEnvVar("logStartTime"));
+          expect(data.scopes[0].logEndTime).to.equal(bru.getEnvVar("logEndTime"));
+          expect(JSON.stringify(data)).to.not.contain("forged-applicant-account-should-be-ignored");
+          expect(JSON.stringify(data)).to.not.contain("forged-applicant-org-should-be-ignored");
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data.requestNo
+        method: jsonq
+      variable:
+        name: lifecycleRequestNo
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

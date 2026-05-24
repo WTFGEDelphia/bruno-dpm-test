@@ -1,0 +1,61 @@
+info:
+  name: 02 详情查询畸形JSON
+  type: http
+  seq: 2
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 请求体格式
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: file
+    data:
+      - filePath: files/fixtures/malformed-json-body.txt
+        contentType: application/json
+        selected: true
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function bodyText() {
+          const body = res.getBody();
+          return typeof body === "string" ? body : JSON.stringify(body);
+        }
+
+        function expectMalformedJsonResult() {
+          expect(res.getStatus()).to.equal(200);
+          expect(String(res.getHeader("content-type") || "").toLowerCase()).to.not.contain("text/html");
+          const json = res.getBody();
+          expect(json).to.be.an("object");
+          expect(json.code).to.equal(400);
+          const reason = String(json.reason || json.message || bodyText());
+          expect(reason).to.contain("请求体格式错误");
+          const text = bodyText();
+          expect(text.toLowerCase()).to.not.contain("<html");
+          expect(text).to.not.contain("Whitelabel Error Page");
+          expect(text).to.not.contain("HttpMessageNotReadableException");
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+          return json;
+        }
+
+        test("详情查询畸形 JSON 返回统一 Result 错误", () => {
+          expectMalformedJsonResult();
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

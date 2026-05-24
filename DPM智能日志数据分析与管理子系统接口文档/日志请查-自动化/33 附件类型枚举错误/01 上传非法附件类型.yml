@@ -1,0 +1,52 @@
+info:
+  name: 01 上传非法附件类型
+  type: http
+  seq: 1
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 附件参数
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/attachments/upload?requestId=1&attachmentType=UNKNOWN"
+  body:
+    type: multipart-form
+    data:
+      - name: file
+        type: file
+        value:
+          - files/fixtures/log-request-application.csv
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function expectInvalidAttachmentType() {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json).to.be.an("object");
+          expect(json.code).to.not.equal(200);
+          const text = JSON.stringify(json);
+          expect(text).to.contain("附件类型");
+          expect(text.toLowerCase()).to.not.contain("<html");
+          expect(text).to.not.contain("Whitelabel Error Page");
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+          expect(json.data).to.not.be.a("number");
+          expect(String(res.getHeader("content-disposition") || "")).to.not.contain("attachment;");
+        }
+
+        test("上传非法 attachmentType 被统一拒绝", () => {
+          expectInvalidAttachmentType();
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

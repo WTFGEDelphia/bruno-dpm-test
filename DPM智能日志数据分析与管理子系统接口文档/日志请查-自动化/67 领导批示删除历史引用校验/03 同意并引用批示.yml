@@ -1,0 +1,46 @@
+info:
+  name: 03 同意并引用批示
+  type: http
+  seq: 3
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 领导批示
+    - 流程日志
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/approve"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{directiveHistoryRequestId}},
+        "decision": "同意",
+        "opinion": "同意并引用领导批示，后续校验历史引用",
+        "directiveAttachmentIds": [
+          {{directiveHistoryAttachmentId}}
+        ]
+      }
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("同意并引用领导批示成功", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data).to.equal(true);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,11 @@
+info:
+  name: 35 请求体类型错误
+  type: folder
+  seq: 35
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 请求体类型错误链路。第 21 组覆盖无法解析的畸形 JSON，本组覆盖语法合法但类型错误的 JSON，例如数组或 null。
+  目标是验证 @RequestBody VO 反序列化失败时仍返回统一 Result 错误，而不是 HTML/Whitelabel、异常类名或路径泄露。

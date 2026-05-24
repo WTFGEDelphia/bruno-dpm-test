@@ -1,0 +1,56 @@
+info:
+  name: 10 查询作废后详情
+  type: http
+  seq: 10
+  tags:
+    - 日志请查
+    - 自动化
+    - P0
+    - 生命周期
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{lifecycleRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function body() {
+          return res.getBody();
+        }
+
+        function expectSuccess() {
+          expect(res.getStatus()).to.equal(200);
+          const json = body();
+          expect(json).to.be.an("object");
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          return json;
+        }
+
+        test("作废后状态为 VOIDED", () => {
+          const json = expectSuccess();
+          expect(json.data.id).to.equal(Number(bru.getVar("lifecycleRequestId")));
+          expect(json.data.status).to.equal("VOIDED");
+        });
+
+        test("作废产生用户可见流程日志", () => {
+          const flowLogs = body().data.flowLogs || [];
+          expect(flowLogs.some(item => item.actionText === "作废日志请查申请" || item.nodeName === "申请作废")).to.equal(true);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

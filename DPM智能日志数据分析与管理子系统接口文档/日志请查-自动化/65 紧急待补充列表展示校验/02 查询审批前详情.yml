@@ -1,0 +1,56 @@
+info:
+  name: 02 查询审批前详情
+  type: http
+  seq: 2
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 紧急审批
+    - 展示
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{urgentPendingDisplayRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("审批前紧急待审核展示正确", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const data = json.data;
+          expect(data.id).to.equal(Number(bru.getVar("urgentPendingDisplayRequestId")));
+          expect(data.status).to.equal("PENDING");
+          expect(data.urgent).to.equal(true);
+          expect(data.statusDisplay).to.equal("待审核·紧急");
+          expect(JSON.stringify(data)).to.not.contain("暂存");
+          expect(JSON.stringify(data)).to.not.contain("已撤销");
+          bru.setVar("urgentPendingDisplayRequestNo", data.requestNo);
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data.requestNo
+        method: jsonq
+      variable:
+        name: urgentPendingDisplayRequestNo
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,46 @@
+info:
+  name: 05 草稿编号导出
+  type: http
+  seq: 5
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 草稿
+    - 导出
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/export"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "requestNo": "{{draftExportRequestNo}}",
+        "status": "DRAFT",
+        "pageType": "CITY"
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("按草稿编号导出返回空结果Excel文件流", () => {
+          expect(res.getStatus()).to.equal(200);
+          expect(String(res.getHeader("content-disposition") || "")).to.contain("attachment;");
+          expect(String(res.getHeader("content-type") || "")).to.contain("spreadsheetml.sheet");
+          const size = res.getSize().body;
+          expect(size).to.be.greaterThan(0);
+          bru.setVar("draftExportSize", String(size));
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

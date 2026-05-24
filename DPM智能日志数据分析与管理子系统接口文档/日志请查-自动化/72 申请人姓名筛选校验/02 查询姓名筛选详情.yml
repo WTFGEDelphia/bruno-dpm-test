@@ -1,0 +1,55 @@
+info:
+  name: 02 查询姓名筛选详情
+  type: http
+  seq: 2
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 列表筛选
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{applicantNameFilterRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("详情返回服务端可信申请人姓名", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const data = json.data;
+          expect(data.id).to.equal(Number(bru.getVar("applicantNameFilterRequestId")));
+          expect(data.requestNo).to.be.a("string").and.not.empty;
+          expect(data.applicantName).to.be.a("string").and.not.empty;
+          expect(data.applicantName).to.not.equal("forged-applicant-name-should-be-ignored");
+          expect(JSON.stringify(data)).to.not.contain("forged-applicant-name-should-be-ignored");
+          bru.setVar("applicantNameFilterRequestNo", data.requestNo);
+          bru.setVar("applicantNameFilterName", data.applicantName);
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data.requestNo
+        method: jsonq
+      variable:
+        name: applicantNameFilterRequestNo
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

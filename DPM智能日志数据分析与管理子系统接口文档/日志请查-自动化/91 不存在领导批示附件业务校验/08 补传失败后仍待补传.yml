@@ -1,0 +1,52 @@
+info:
+  name: 08 补传失败后仍待补传
+  type: http
+  seq: 8
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 补传
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{missingDirectiveSupplementRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("不存在批示补传失败后申请仍待补传且授权不变", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const data = json.data;
+          expect(data.id).to.equal(Number(bru.getVar("missingDirectiveSupplementRequestId")));
+          expect(data.status).to.equal("COMPLETED");
+          expect(data.directiveStatus).to.equal("PENDING");
+          expect(data.authorization).to.be.an("object");
+          expect(data.authorization.pendingDirective).to.equal(true);
+          expect(data.authorization.authorizationStartTime).to.equal(bru.getVar("missingDirectiveAuthorizationStartTime"));
+          expect(data.authorization.authorizationEndTime).to.equal(bru.getVar("missingDirectiveAuthorizationEndTime"));
+          const supplementLogs = (data.flowLogs || []).filter(item =>
+            item.actionText === "处置办理：补充领导批示" || item.nodeName === "补传领导批示"
+          );
+          expect(supplementLogs).to.have.length(0);
+          expect(JSON.stringify(data)).to.not.contain("storagePath");
+          expect(JSON.stringify(data)).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

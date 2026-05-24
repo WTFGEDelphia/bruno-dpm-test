@@ -1,0 +1,44 @@
+info:
+  name: 05 待补充不在省厅待办
+  type: http
+  seq: 5
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 紧急审批
+    - 列表
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/province/todo/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "requestNo": "{{urgentPendingDisplayRequestNo}}"
+      }
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("已完成紧急待补充不进入省厅待办", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const records = json.data.records || [];
+          const requestId = Number(bru.getVar("urgentPendingDisplayRequestId"));
+          expect(records.some(item => item.id === requestId)).to.equal(false);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

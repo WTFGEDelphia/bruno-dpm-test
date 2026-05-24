@@ -1,0 +1,62 @@
+info:
+  name: 04 创建待补传申请
+  type: http
+  seq: 4
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 补传
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/create"
+  body:
+    type: json
+    data: |-
+      {
+        "targetOrgId": "{{targetOrgId}}",
+        "targetOrgName": "{{targetOrgName}}",
+        "validDays": {{validDays}},
+        "urgent": true,
+        "requestReason": "{{requestReason}}-不存在批示补传校验",
+        "scopes": [
+          {
+            "systemRange": "{{systemRange}}",
+            "logStartTime": "{{logStartTime}}",
+            "logEndTime": "{{logEndTime}}"
+          }
+        ]
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("创建待补传申请成功", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data).to.be.a("number");
+          expect(json.data).to.be.greaterThan(0);
+          bru.setVar("missingDirectiveSupplementRequestId", String(json.data));
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data
+        method: jsonq
+      variable:
+        name: missingDirectiveSupplementRequestId
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

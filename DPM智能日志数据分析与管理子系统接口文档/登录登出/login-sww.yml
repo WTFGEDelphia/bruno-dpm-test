@@ -1,0 +1,35 @@
+info:
+  name: login-sww
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{host}}/public_ws/sys/user/login"
+  body:
+    type: json
+    data: |-
+      {
+        "loginName": "sww",
+        "password": "FeHtReFpWsxR4Lh99B/QlskCQ6wGL/jMJae19BP/qXkOqOx7sY9CATFj/P/kkn4ctx9n2D9NCOk3ARFoeifTLz1eZw/Ie3MWxlPL6FdTBQ4xneIMZFkasUyJSRM28g2gowd5FKkuj/LfoHF/zr8egUFFeaIDFS7HpOSK6WJta/I="
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const setCookie = res.headerList.get("set-cookie") || "";
+        const match = String(setCookie).match(/(?:^|[,;]\s*)tokenId=([^;,]+)/i);
+
+        if (!match) {
+          throw new Error("响应头 set-cookie 中未找到 tokenId");
+        }
+
+        bru.setEnvVar("otherApplicantToken", match[1], { persist: true });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,53 @@
+info:
+  name: 03 上传后流程日志
+  type: http
+  seq: 3
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 附件
+    - 流程日志
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{formalAttachmentFlowRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("正式申请上传附件后当前列表可见且写入上传日志", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const data = json.data;
+          const attachmentId = Number(bru.getVar("formalAttachmentFlowAttachmentId"));
+          const attachment = (data.attachments || []).find(item => item.id === attachmentId);
+          expect(attachment, "上传后的申请附件应在当前附件列表").to.exist;
+          expect(attachment.attachmentType).to.equal("APPLICATION");
+          expect(attachment.deleted).to.not.equal(true);
+          expect(attachment.downloadable).to.not.equal(false);
+          const uploadLogs = (data.flowLogs || []).filter(item =>
+            item.actionText === "上传日志请查附件" || item.nodeName === "附件上传"
+          );
+          expect(uploadLogs.length).to.be.greaterThan(0);
+          const text = JSON.stringify(data);
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

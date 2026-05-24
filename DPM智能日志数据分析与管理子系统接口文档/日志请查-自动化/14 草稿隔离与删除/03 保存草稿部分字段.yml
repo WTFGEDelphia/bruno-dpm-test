@@ -1,0 +1,42 @@
+info:
+  name: 03 保存草稿部分字段
+  type: http
+  seq: 3
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 草稿
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/draft/update"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{draftIsolationDraftId}},
+        "requestReason": "{{requestReason}}-草稿隔离",
+        "scopes": []
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("草稿允许保存部分字段", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data).to.equal(true);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

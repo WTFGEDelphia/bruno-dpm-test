@@ -1,0 +1,10 @@
+info:
+  name: 60 整改续办字段替换校验
+  type: folder
+  seq: 60
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 整改续办字段替换校验链路。覆盖待审核申请撤回后，申请人基于同一申请重新提交时，申请编号保持不变，状态回到 PENDING，validDays/urgent/requestReason/scopes 按重提内容替换，且无授权残留。

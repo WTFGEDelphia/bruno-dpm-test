@@ -1,0 +1,59 @@
+info:
+  name: 07 查询补传后详情
+  type: http
+  seq: 7
+  tags:
+    - 日志请查
+    - 自动化
+    - P0
+    - 紧急审批
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{urgentRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function body() {
+          return res.getBody();
+        }
+
+        test("补传后批示已上传且授权时间不变", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = body();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data.status).to.equal("COMPLETED");
+          expect(json.data.directiveStatus).to.equal("UPLOADED");
+          expect(json.data.authorization).to.be.an("object");
+          expect(json.data.authorization.pendingDirective).to.not.equal(true);
+          expect(json.data.authorization.authorizationStartTime).to.equal(bru.getVar("urgentAuthorizationStartTime"));
+          expect(json.data.authorization.authorizationEndTime).to.equal(bru.getVar("urgentAuthorizationEndTime"));
+        });
+
+        test("补传流程日志关联补传批示附件", () => {
+          const directiveAttachmentId = Number(bru.getVar("urgentDirectiveAttachmentId"));
+          const flowLogs = body().data.flowLogs || [];
+          const supplemented = flowLogs.find(item => item.actionText === "补传领导批示" || item.nodeName === "补传领导批示");
+          expect(supplemented, "流程日志应包含补传领导批示节点").to.exist;
+          expect(JSON.stringify(supplemented.directiveAttachmentIds || [])).to.contain(String(directiveAttachmentId));
+          expect(JSON.stringify(supplemented)).to.not.contain("storagePath");
+          expect(JSON.stringify(supplemented)).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

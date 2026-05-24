@@ -1,0 +1,43 @@
+info:
+  name: 03 查询无超大附件残留
+  type: http
+  seq: 3
+  tags:
+    - 日志请查
+    - 自动化
+    - P2
+    - 附件边界
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{oversizeAttachmentRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("超大附件被拒绝后详情无附件残留", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          const attachments = (json.data.attachments || []).filter(item => item.deleted !== true);
+          expect(attachments).to.have.length(0);
+          expect(JSON.stringify(json.data.attachments || [])).to.not.contain("storagePath");
+          expect(JSON.stringify(json.data.attachments || [])).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

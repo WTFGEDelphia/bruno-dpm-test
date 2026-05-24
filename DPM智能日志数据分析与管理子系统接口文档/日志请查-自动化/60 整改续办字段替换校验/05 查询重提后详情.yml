@@ -1,0 +1,61 @@
+info:
+  name: 05 查询重提后详情
+  type: http
+  seq: 5
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 整改续办
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{resubmitReplaceRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("重提后沿用同一申请且字段替换为新值", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          const data = json.data;
+          expect(data.id).to.equal(Number(bru.getVar("resubmitReplaceRequestId")));
+          expect(data.requestNo).to.equal(bru.getVar("resubmitReplaceRequestNo"));
+          expect(data.status).to.equal("PENDING");
+          expect(data.directiveStatus).to.equal("NONE");
+          expect(data.validDays).to.equal(5);
+          expect(data.urgent).to.equal(true);
+          expect(data.requestReason).to.contain("整改续办字段替换重提");
+          expect(data.authorization || null).to.equal(null);
+          expect(data.scopes).to.be.an("array").with.length(1);
+          expect(data.scopes[0].systemRange).to.equal("整改续办系统范围");
+          expect(data.scopes[0].logStartTime).to.equal("2026-05-03 00:00:00");
+          expect(data.scopes[0].logEndTime).to.equal("2026-05-04 00:00:00");
+        });
+
+        test("重提详情保留撤回与重新提交流程且不泄露存储路径", () => {
+          const data = res.getBody().data;
+          const flowText = JSON.stringify(data.flowLogs || []);
+          expect(flowText).to.contain("撤回");
+          expect(flowText).to.contain("重新提交");
+          expect(JSON.stringify(data)).to.not.contain("storagePath");
+          expect(JSON.stringify(data)).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
