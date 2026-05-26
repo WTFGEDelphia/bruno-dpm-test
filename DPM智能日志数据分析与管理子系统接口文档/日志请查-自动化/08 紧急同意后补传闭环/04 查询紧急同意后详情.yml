@@ -34,8 +34,12 @@ runtime:
           expect(json.data.status).to.equal("COMPLETED");
           expect(json.data.urgent).to.equal(true);
           expect(json.data.directiveStatus).to.equal("PENDING");
+          expect(json.data.targetOrgId).to.equal(bru.getEnvVar("targetOrgId"));
+          expect(json.data.targetOrgName).to.be.a("string").and.not.empty;
           expect(json.data.authorization).to.be.an("object");
           expect(json.data.authorization.authorizationType).to.equal("LOG_READ");
+          expect(json.data.authorization.targetOrgId).to.equal(json.data.targetOrgId);
+          expect(json.data.authorization.targetOrgName).to.equal(json.data.targetOrgName);
           expect(json.data.authorization.pendingDirective).to.equal(true);
           expect(json.data.authorization.authorizationStartTime).to.be.a("string").and.not.empty;
           expect(json.data.authorization.authorizationEndTime).to.be.a("string").and.not.empty;

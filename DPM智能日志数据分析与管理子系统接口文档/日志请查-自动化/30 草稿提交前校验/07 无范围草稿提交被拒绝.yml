@@ -15,7 +15,13 @@ http:
     type: json
     data: |-
       {
-        "id": {{emptyScopeDraftId}}
+        "id": {{emptyScopeDraftId}},
+        "targetOrgId": "{{targetOrgId}}",
+        "targetOrgName": "{{targetOrgName}}",
+        "validDays": {{validDays}},
+        "urgent": false,
+        "requestReason": "草稿提交前校验-缺少调取范围",
+        "scopes": []
       }
   auth:
     type: bearer

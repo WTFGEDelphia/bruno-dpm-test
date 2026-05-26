@@ -15,7 +15,9 @@ http:
     type: json
     data: |-
       {
-        "id": {{partialDraftId}}
+        "id": {{partialDraftId}},
+        "requestReason": "草稿提交前校验-部分字段",
+        "scopes": []
       }
   auth:
     type: bearer
@@ -31,7 +33,7 @@ runtime:
           expect(json).to.be.an("object");
           expect(json.code).to.not.equal(200);
           const text = JSON.stringify(json);
-          expect(text).to.contain("必填");
+          expect(text).to.contain("不能为空");
           expect(text).to.not.contain("storagePath");
           expect(text).to.not.contain("/Users/");
         });

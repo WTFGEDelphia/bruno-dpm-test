@@ -43,6 +43,8 @@ runtime:
           expect(json.data).to.be.an("object");
           expect(json.data.id).to.equal(Number(bru.getVar("requestId")));
           expect(json.data.status).to.equal("PENDING");
+          expect(json.data.targetOrgId).to.equal(bru.getEnvVar("targetOrgId"));
+          expect(json.data.targetOrgName).to.be.a("string").and.not.empty;
           expect(json.data.requestNo).to.be.a("string").and.not.empty;
           bru.setVar("requestNo", json.data.requestNo);
         });
