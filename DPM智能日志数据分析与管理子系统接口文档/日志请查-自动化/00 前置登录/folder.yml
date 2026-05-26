@@ -1,0 +1,10 @@
+info:
+  name: 00 前置登录
+  type: folder
+  seq: 0
+
+request:
+  auth: inherit
+
+docs: |-
+  自动化集合前置登录步骤。运行日志请查-自动化目录时，先登录省厅账号、其他申请人账号、当前申请人账号，并写入 LogRequestAutomationLocal 环境变量供后续用例使用。

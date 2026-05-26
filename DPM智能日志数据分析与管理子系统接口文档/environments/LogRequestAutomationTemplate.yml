@@ -1,4 +1,4 @@
-name: Log Request Automation Template
+name: LogRequestAutomationTemplate
 variables:
   - name: host
     value: https://example-host:18080

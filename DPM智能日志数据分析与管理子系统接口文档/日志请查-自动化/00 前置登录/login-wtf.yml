@@ -1,0 +1,49 @@
+info:
+  name: login-wtf
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{host}}/public_ws/sys/user/login"
+  body:
+    type: json
+    data: |-
+      {
+        "loginName": "ds",
+        "password": "FeHtReFpWsxR4Lh99B/QlskCQ6wGL/jMJae19BP/qXkOqOx7sY9CATFj/P/kkn4ctx9n2D9NCOk3ARFoeifTLz1eZw/Ie3MWxlPL6FdTBQ4xneIMZFkasUyJSRM28g2gowd5FKkuj/LfoHF/zr8egUFFeaIDFS7HpOSK6WJta/I="
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const setCookie = res.headerList.get("set-cookie") || "";
+        const match = String(setCookie).match(/(?:^|[,;]\s*)tokenId=([^;,]+)/i);
+
+        const body = res.getBody();
+        const user = body && body.data;
+
+        if (!user || !user.id) {
+          throw new Error("响应体 data.id 为空");
+        }
+
+        if (!user.orgId) {
+          throw new Error("响应体 data.orgId 为空");
+        }
+
+        if (!match) {
+          throw new Error("响应头 set-cookie 中未找到 tokenId");
+        }
+
+        bru.setEnvVar("applicantToken", match[1], { persist: true });
+        bru.setEnvVar("applicantAccountId", String(user.id), { persist: true });
+        bru.setEnvVar("applicantOrgId", String(user.orgId), { persist: true });
+        bru.setEnvVar("targetOrgId", String(user.orgId), { persist: true });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
