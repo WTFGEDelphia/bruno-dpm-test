@@ -44,7 +44,14 @@ runtime:
           const flowLogs = data.flowLogs || [];
           const approved = flowLogs.find(item => item.actionText === "处置办理：同意" || item.conclusion === "同意");
           expect(approved, "审批流程日志应存在").to.exist;
+          expect(approved.flowSide).to.equal("PROVINCE");
           expect(JSON.stringify(approved.directiveAttachmentIds || [])).to.contain(String(attachmentId));
+          const directiveDelete = flowLogs.find(item =>
+            (item.actionText === "删除日志请查附件" || item.nodeName === "附件删除")
+              && JSON.stringify(item.directiveAttachmentIds || []).includes(String(attachmentId))
+          );
+          expect(directiveDelete, "删除领导批示应写入省厅侧附件删除流程日志").to.exist;
+          expect(directiveDelete.flowSide).to.equal("PROVINCE");
           const historical = approved.directiveAttachments || [];
           const matched = historical.find(item => item.id === attachmentId);
           expect(matched, "历史领导批示元信息应保留").to.exist;
@@ -53,6 +60,12 @@ runtime:
           expect(matched.downloadable).to.equal(false);
           const text = JSON.stringify(data);
           expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("storageBucket");
+          expect(text).to.not.contain("endpoint");
+          expect(text).to.not.contain("bucket");
+          expect(text).to.not.contain("objectName");
+          expect(text).to.not.contain("accessKey");
+          expect(text).to.not.contain("secretKey");
           expect(text).to.not.contain("/Users/");
         });
 

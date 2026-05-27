@@ -10,7 +10,13 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/api/v1/log-requests/attachments/download?attachmentId={{attachmentMismatchApplicationId}}"
+  url: "{{baseUrl}}/api/v1/log-requests/attachments/download"
+  body:
+    type: json
+    data: |-
+      {
+        "attachmentId": {{attachmentMismatchApplicationId}}
+      }
   auth:
     type: bearer
     token: "{{applicantToken}}"

@@ -10,7 +10,13 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/api/v1/log-requests/attachments/download?attachmentId={{applicationAttachmentId}}"
+  url: "{{baseUrl}}/api/v1/log-requests/attachments/download"
+  body:
+    type: json
+    data: |-
+      {
+        "attachmentId": {{applicationAttachmentId}}
+      }
   auth:
     type: bearer
     token: "{{applicantToken}}"

@@ -54,9 +54,17 @@ runtime:
           const flowLogs = body().data.flowLogs || [];
           const approved = flowLogs.find(item => item.actionText === "处置办理：同意" || item.conclusion === "同意");
           expect(approved, "流程日志应包含同意审批节点").to.exist;
+          expect(approved.flowSide).to.equal("PROVINCE");
           expect(JSON.stringify(approved.directiveAttachmentIds || [])).to.contain(String(directiveAttachmentId));
-          expect(JSON.stringify(approved)).to.not.contain("storagePath");
-          expect(JSON.stringify(approved)).to.not.contain("/Users/");
+          const text = JSON.stringify(approved);
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("storageBucket");
+          expect(text).to.not.contain("endpoint");
+          expect(text).to.not.contain("bucket");
+          expect(text).to.not.contain("objectName");
+          expect(text).to.not.contain("accessKey");
+          expect(text).to.not.contain("secretKey");
+          expect(text).to.not.contain("/Users/");
         });
 
 settings:

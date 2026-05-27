@@ -59,7 +59,18 @@ runtime:
 
         test("提交产生用户可见流程日志", () => {
           const flowLogs = body().data.flowLogs || [];
-          expect(flowLogs.some(item => item.actionText === "提交日志请查申请" || item.nodeName === "申请提交")).to.equal(true);
+          const submitted = flowLogs.find(item => item.actionText === "提交日志请查申请" || item.nodeName === "申请提交");
+          expect(submitted, "流程日志应包含申请提交节点").to.exist;
+          expect(submitted.flowSide).to.equal("CITY");
+          const text = JSON.stringify(body().data);
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("storageBucket");
+          expect(text).to.not.contain("endpoint");
+          expect(text).to.not.contain("bucket");
+          expect(text).to.not.contain("objectName");
+          expect(text).to.not.contain("accessKey");
+          expect(text).to.not.contain("secretKey");
+          expect(text).to.not.contain("/Users/");
         });
   actions:
     - type: set-variable

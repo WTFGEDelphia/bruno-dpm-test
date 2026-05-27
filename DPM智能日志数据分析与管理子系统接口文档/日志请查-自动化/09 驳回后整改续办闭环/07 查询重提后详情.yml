@@ -46,11 +46,26 @@ runtime:
 
         test("重提后流程日志保留驳回并追加整改节点", () => {
           const flowLogs = body().data.flowLogs || [];
+          const rejected = flowLogs.find(item => item.actionText === "处置办理：不同意" || item.conclusion === "不同意");
+          const modified = flowLogs.find(item => item.nodeName === "申请修改" || item.conclusion === "已修改");
+          const resubmitted = flowLogs.find(item => item.nodeName === "重新提交" || item.conclusion === "重新提交");
+          expect(rejected, "流程日志应保留省厅驳回节点").to.exist;
+          expect(modified, "流程日志应包含地市申请修改节点").to.exist;
+          expect(resubmitted, "流程日志应包含地市重新提交节点").to.exist;
+          expect(rejected.flowSide).to.equal("PROVINCE");
+          expect(modified.flowSide).to.equal("CITY");
+          expect(resubmitted.flowSide).to.equal("CITY");
           const text = JSON.stringify(flowLogs);
           expect(text).to.contain("处置办理：不同意");
           expect(text).to.contain("申请修改");
           expect(text).to.contain("重新提交");
           expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("storageBucket");
+          expect(text).to.not.contain("endpoint");
+          expect(text).to.not.contain("bucket");
+          expect(text).to.not.contain("objectName");
+          expect(text).to.not.contain("accessKey");
+          expect(text).to.not.contain("secretKey");
           expect(text).to.not.contain("/Users/");
         });
 

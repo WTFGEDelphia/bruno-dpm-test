@@ -10,7 +10,13 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/api/v1/log-requests/attachments/download?attachmentId={{attachmentPermissionDirectiveId}}"
+  url: "{{baseUrl}}/api/v1/log-requests/attachments/download"
+  body:
+    type: json
+    data: |-
+      {
+        "attachmentId": {{attachmentPermissionDirectiveId}}
+      }
   auth:
     type: bearer
     token: "{{provinceToken}}"

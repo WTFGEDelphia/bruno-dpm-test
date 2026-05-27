@@ -8,4 +8,4 @@ request:
 
 docs: |-
   P1 附件下载参数边界链路。覆盖 attachmentId 空值、空白、0 和负数时的统一错误或业务拒绝。
-  下载失败时不能返回文件流，且不能泄露框架异常、本地路径或 storagePath。
+  下载接口使用 JSON 请求体传递 attachmentId；下载失败时不能返回文件流，且不能泄露框架异常、本地路径、storagePath 或 MinIO 存储细节。

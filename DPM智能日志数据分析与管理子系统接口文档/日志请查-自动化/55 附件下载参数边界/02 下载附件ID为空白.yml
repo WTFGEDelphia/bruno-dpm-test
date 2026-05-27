@@ -10,7 +10,13 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/api/v1/log-requests/attachments/download?attachmentId=%20%20%20"
+  url: "{{baseUrl}}/api/v1/log-requests/attachments/download"
+  body:
+    type: json
+    data: |-
+      {
+        "attachmentId": "   "
+      }
   auth:
     type: bearer
     token: "{{applicantToken}}"
@@ -31,6 +37,12 @@ runtime:
           expect(text).to.not.contain("MethodArgumentTypeMismatchException");
           expect(text).to.not.contain("NumberFormatException");
           expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("storageBucket");
+          expect(text).to.not.contain("endpoint");
+          expect(text).to.not.contain("bucket");
+          expect(text).to.not.contain("objectName");
+          expect(text).to.not.contain("accessKey");
+          expect(text).to.not.contain("secretKey");
           expect(text).to.not.contain("/Users/");
           expect(String(res.getHeader("content-disposition") || "")).to.not.contain("attachment;");
         }

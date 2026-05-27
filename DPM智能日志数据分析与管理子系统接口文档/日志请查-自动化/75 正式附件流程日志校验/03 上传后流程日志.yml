@@ -41,8 +41,15 @@ runtime:
             item.actionText === "上传日志请查附件" || item.nodeName === "附件上传"
           );
           expect(uploadLogs.length).to.be.greaterThan(0);
+          expect(uploadLogs.some(item => item.flowSide === "CITY")).to.equal(true);
           const text = JSON.stringify(data);
           expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("storageBucket");
+          expect(text).to.not.contain("endpoint");
+          expect(text).to.not.contain("bucket");
+          expect(text).to.not.contain("objectName");
+          expect(text).to.not.contain("accessKey");
+          expect(text).to.not.contain("secretKey");
           expect(text).to.not.contain("/Users/");
         });
 
