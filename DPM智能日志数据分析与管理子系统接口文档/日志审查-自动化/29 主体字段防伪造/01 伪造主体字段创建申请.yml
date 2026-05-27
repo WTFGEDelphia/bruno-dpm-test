@@ -1,0 +1,65 @@
+info:
+  name: 01 伪造主体字段创建申请
+  type: http
+  seq: 1
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 主体防伪造
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/create"
+  body:
+    type: json
+    data: |-
+      {
+        "targetOrgId": "{{targetOrgId}}",
+        "targetOrgName": "forged-target-org-name-should-be-ignored",
+        "validDays": {{validDays}},
+        "urgent": false,
+        "requestReason": "主体字段防伪造-创建申请",
+        "scopes": [
+          {
+            "systemRange": "{{systemRange}}",
+            "logStartTime": "{{logStartTime}}",
+            "logEndTime": "{{logEndTime}}"
+          }
+        ],
+        "applicantAccountId": "forged-trusted-field-account-should-be-ignored",
+        "applicantOrgId": "forged-trusted-field-org-should-be-ignored"
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("伪造主体字段创建申请成功并返回真实ID", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json).to.be.an("object");
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data).to.be.a("number");
+          expect(json.data).to.be.greaterThan(0);
+          bru.setVar("trustedFieldRequestId", String(json.data));
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data
+        method: jsonq
+      variable:
+        name: trustedFieldRequestId
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

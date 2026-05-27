@@ -1,0 +1,46 @@
+info:
+  name: 03 同意形成完成态
+  type: http
+  seq: 3
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 附件
+    - 状态流转
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/approve"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{attachmentStateRequestId}},
+        "decision": "同意",
+        "opinion": "同意形成已完成非待补传状态",
+        "directiveAttachmentIds": [
+          {{attachmentStateDirectiveId}}
+        ]
+      }
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("同意形成完成态成功", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data).to.equal(true);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

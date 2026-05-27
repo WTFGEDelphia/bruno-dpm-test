@@ -1,0 +1,43 @@
+info:
+  name: 07 上传不支持扩展名被拒绝
+  type: http
+  seq: 7
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 附件
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/attachments/upload?requestId={{attachmentRequestId}}&attachmentType=APPLICATION"
+  body:
+    type: multipart-form
+    data:
+      - name: file
+        type: file
+        value:
+          - files/fixtures/blocked-attachment.txt
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("不支持扩展名上传被拒绝", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.not.equal(200);
+          expect(json.reason).to.contain("类型不支持");
+          const text = JSON.stringify(json);
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

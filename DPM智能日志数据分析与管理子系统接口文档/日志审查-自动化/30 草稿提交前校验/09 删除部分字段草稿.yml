@@ -1,0 +1,41 @@
+info:
+  name: 09 删除部分字段草稿
+  type: http
+  seq: 9
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 草稿提交
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/draft/delete"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{partialDraftId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("删除部分字段草稿成功", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json).to.be.an("object");
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data).to.equal(true);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

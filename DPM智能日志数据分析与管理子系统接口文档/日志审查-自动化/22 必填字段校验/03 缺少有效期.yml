@@ -1,0 +1,58 @@
+info:
+  name: 03 缺少有效期
+  type: http
+  seq: 3
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 必填字段
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/create"
+  body:
+    type: json
+    data: |-
+      {
+        "targetOrgId": "{{targetOrgId}}",
+        "targetOrgName": "{{targetOrgName}}",
+        "urgent": false,
+        "requestReason": "{{requestReason}}-缺少有效期",
+        "scopes": [
+          {
+            "systemRange": "{{systemRange}}",
+            "logStartTime": "{{logStartTime}}",
+            "logEndTime": "{{logEndTime}}"
+          }
+        ]
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function expectValidationDenied(expectedText) {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.not.equal(200);
+          const reason = String(json.reason || json.message || JSON.stringify(json));
+          expect(reason).to.contain(expectedText);
+          const text = JSON.stringify(json);
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+          return json;
+        }
+
+        test("缺少有效期被拒绝", () => {
+          expectValidationDenied("有效期");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,11 @@
+info:
+  name: 81 省厅已办导出权限补充
+  type: folder
+  seq: 81
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 省厅已办导出权限补充。覆盖申请人不能使用 PROVINCE_DONE 导出页面类型，失败响应不能返回 Excel 文件流或泄露申请数据。
+  第 10 组已覆盖 PROVINCE_TODO，本组补齐 PROVINCE_DONE 的非省厅主体拒绝语义。

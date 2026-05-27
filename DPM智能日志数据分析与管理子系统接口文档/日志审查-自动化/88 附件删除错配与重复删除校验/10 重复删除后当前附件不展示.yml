@@ -1,0 +1,45 @@
+info:
+  name: 10 重复删除后当前附件不展示
+  type: http
+  seq: 10
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 附件
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{attachmentMismatchRequestAId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("重复删除失败后当前附件列表不展示已删除附件", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const data = json.data;
+          expect(data.id).to.equal(Number(bru.getVar("attachmentMismatchRequestAId")));
+          const attachmentId = Number(bru.getVar("attachmentMismatchApplicationId"));
+          const current = data.attachments || [];
+          expect(current.find(item => item.id === attachmentId)).to.not.exist;
+          expect(JSON.stringify(data)).to.not.contain("storagePath");
+          expect(JSON.stringify(data)).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

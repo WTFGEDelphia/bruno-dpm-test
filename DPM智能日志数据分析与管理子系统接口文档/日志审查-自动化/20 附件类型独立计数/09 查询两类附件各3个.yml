@@ -1,0 +1,55 @@
+info:
+  name: 09 查询两类附件各3个
+  type: http
+  seq: 9
+  tags:
+    - 日志请查
+    - 自动化
+    - P2
+    - 附件计数
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{attachmentTypeCountRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function activeByType(attachments, type) {
+          return (attachments || []).filter(item => item.attachmentType === type && item.deleted !== true);
+        }
+
+        test("APPLICATION 与 LEADER_DIRECTIVE 分别保持 3 个未删除附件", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          const applications = activeByType(json.data.attachments, "APPLICATION");
+          const directives = activeByType(json.data.attachments, "LEADER_DIRECTIVE");
+          expect(applications).to.have.length(3);
+          expect(directives).to.have.length(3);
+          expect(applications.map(item => item.id)).to.include(Number(bru.getVar("typeCountApplication1Id")));
+          expect(applications.map(item => item.id)).to.include(Number(bru.getVar("typeCountApplication2Id")));
+          expect(applications.map(item => item.id)).to.include(Number(bru.getVar("typeCountApplication3Id")));
+          expect(directives.map(item => item.id)).to.include(Number(bru.getVar("typeCountDirective1Id")));
+          expect(directives.map(item => item.id)).to.include(Number(bru.getVar("typeCountDirective2Id")));
+          expect(directives.map(item => item.id)).to.include(Number(bru.getVar("typeCountDirective3Id")));
+          expect(JSON.stringify(json.data.attachments || [])).to.not.contain("storagePath");
+          expect(JSON.stringify(json.data.attachments || [])).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,67 @@
+info:
+  name: 05 删除后流程日志
+  type: http
+  seq: 5
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 附件
+    - 流程日志
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{formalAttachmentFlowRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("删除后当前附件列表移除申请附件", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const data = json.data;
+          const attachmentId = Number(bru.getVar("formalAttachmentFlowAttachmentId"));
+          const current = data.attachments || [];
+          expect(current.some(item => item.id === attachmentId)).to.equal(false);
+        });
+
+        test("正式申请附件上传和删除均有用户可见流程日志", () => {
+          const data = res.getBody().data;
+          const flowLogs = data.flowLogs || [];
+          const uploadLogs = flowLogs.filter(item =>
+            item.actionText === "上传日志请查附件" || item.nodeName === "附件上传"
+          );
+          const deleteLogs = flowLogs.filter(item =>
+            item.actionText === "删除日志请查附件" || item.nodeName === "附件删除"
+          );
+          expect(uploadLogs.length).to.be.greaterThan(0);
+          expect(deleteLogs.length).to.be.greaterThan(0);
+          expect(uploadLogs.some(item => item.flowSide === "CITY")).to.equal(true);
+          expect(deleteLogs.some(item => item.flowSide === "CITY")).to.equal(true);
+          const text = JSON.stringify(data);
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("storageBucket");
+          expect(text).to.not.contain("endpoint");
+          expect(text).to.not.contain("bucket");
+          expect(text).to.not.contain("objectName");
+          expect(text).to.not.contain("accessKey");
+          expect(text).to.not.contain("secretKey");
+          expect(text).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

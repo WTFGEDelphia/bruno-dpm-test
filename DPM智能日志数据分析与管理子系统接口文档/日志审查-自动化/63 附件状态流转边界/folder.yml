@@ -1,0 +1,10 @@
+info:
+  name: 63 附件状态流转边界
+  type: folder
+  seq: 63
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 附件状态流转边界链路。覆盖非紧急申请同意完成且领导批示已上传后，申请人不得继续上传 APPLICATION，省厅不得继续上传 LEADER_DIRECTIVE，并确认失败后已完成状态和授权不变。

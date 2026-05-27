@@ -1,0 +1,53 @@
+info:
+  name: 05 申请人不能查询省厅已办
+  type: http
+  seq: 5
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 权限
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/province/done/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function body() {
+          return res.getBody();
+        }
+
+        function expectBusinessDenied() {
+          expect(res.getStatus()).to.equal(200);
+          const json = body();
+          expect(json).to.be.an("object");
+          expect(json.code).to.not.equal(200);
+          const text = JSON.stringify(json);
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+          return json;
+        }
+
+        test("申请人查询省厅已办被拒绝", () => {
+          const json = expectBusinessDenied();
+          expect(json.reason).to.contain("无权");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

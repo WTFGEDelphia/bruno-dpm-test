@@ -1,0 +1,59 @@
+info:
+  name: 03 列表不透出伪造字段
+  type: http
+  seq: 3
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 主体防伪造
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/city/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "requestNo": "{{trustedFieldRequestNo}}",
+        "status": "PENDING"
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const forgedMarkers = [
+          "forged-target-org-name-should-be-ignored",
+          "forged-trusted-field-account-should-be-ignored",
+          "forged-trusted-field-org-should-be-ignored"
+        ];
+
+        test("地市列表可见当前申请但不透出伪造字段", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json).to.be.an("object");
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          const requestId = Number(bru.getVar("trustedFieldRequestId"));
+          const records = (json.data && json.data.records) || [];
+          const matched = records.find(item => item.id === requestId);
+          expect(matched, "列表应包含主体字段防伪造申请").to.exist;
+          expect(matched.requestNo).to.equal(bru.getVar("trustedFieldRequestNo"));
+          expect(matched.status).to.equal("PENDING");
+          expect(matched.targetOrgName).to.be.a("string").and.not.empty;
+          expect(matched.targetOrgName).to.not.equal("forged-target-org-name-should-be-ignored");
+          const text = JSON.stringify(matched);
+          forgedMarkers.forEach(marker => expect(text).to.not.contain(marker));
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

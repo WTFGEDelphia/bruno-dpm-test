@@ -1,0 +1,71 @@
+info:
+  name: 07 查询补传后详情
+  type: http
+  seq: 7
+  tags:
+    - 日志请查
+    - 自动化
+    - P0
+    - 紧急审批
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{urgentRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function body() {
+          return res.getBody();
+        }
+
+        test("补传后批示已上传且授权时间不变", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = body();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data.status).to.equal("COMPLETED");
+          expect(json.data.directiveStatus).to.equal("UPLOADED");
+          expect(json.data.targetOrgId).to.equal(bru.getEnvVar("targetOrgId"));
+          expect(json.data.targetOrgName).to.be.a("string").and.not.empty;
+          expect(json.data.authorization).to.be.an("object");
+          expect(json.data.authorization.targetOrgId).to.equal(json.data.targetOrgId);
+          expect(json.data.authorization.targetOrgName).to.equal(json.data.targetOrgName);
+          expect(json.data.authorization.pendingDirective).to.not.equal(true);
+          expect(json.data.authorization.authorizationStartTime).to.equal(bru.getVar("urgentAuthorizationStartTime"));
+          expect(json.data.authorization.authorizationEndTime).to.equal(bru.getVar("urgentAuthorizationEndTime"));
+        });
+
+        test("补传流程日志关联补传批示附件", () => {
+          const directiveAttachmentId = Number(bru.getVar("urgentDirectiveAttachmentId"));
+          const flowLogs = body().data.flowLogs || [];
+          const supplemented = flowLogs.find(item => item.actionText === "补传领导批示" || item.nodeName === "补传领导批示");
+          expect(supplemented, "流程日志应包含补传领导批示节点").to.exist;
+          expect(supplemented.flowSide).to.equal("PROVINCE");
+          expect(JSON.stringify(supplemented.directiveAttachmentIds || [])).to.contain(String(directiveAttachmentId));
+          const text = JSON.stringify(supplemented);
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("storageBucket");
+          expect(text).to.not.contain("endpoint");
+          expect(text).to.not.contain("bucket");
+          expect(text).to.not.contain("objectName");
+          expect(text).to.not.contain("accessKey");
+          expect(text).to.not.contain("secretKey");
+          expect(text).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

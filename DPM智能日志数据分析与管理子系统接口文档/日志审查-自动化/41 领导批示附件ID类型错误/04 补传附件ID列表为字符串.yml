@@ -1,0 +1,54 @@
+info:
+  name: 04 补传附件ID列表为字符串
+  type: http
+  seq: 4
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 参数类型
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/directive/supplement"
+  body:
+    type: json
+    data: |-
+      {
+        "id": 1,
+        "directiveAttachmentIds": "not-an-array"
+      }
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function expectDirectiveIdsTypeDenied() {
+          expect(res.getStatus()).to.equal(200);
+          expect(String(res.getHeader("content-type") || "").toLowerCase()).to.not.contain("text/html");
+          const json = res.getBody();
+          expect(json).to.be.an("object");
+          expect(json.code).to.not.equal(200);
+          const text = JSON.stringify(json);
+          expect(text.toLowerCase()).to.not.contain("<html");
+          expect(text).to.not.contain("Whitelabel Error Page");
+          expect(text).to.not.contain("HttpMessageNotReadableException");
+          expect(text).to.not.contain("MismatchedInputException");
+          expect(text).to.not.contain("JsonMappingException");
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+          expect(json.data).to.not.equal(true);
+        }
+
+        test("补传 directiveAttachmentIds 为字符串返回统一错误", () => {
+          expectDirectiveIdsTypeDenied();
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

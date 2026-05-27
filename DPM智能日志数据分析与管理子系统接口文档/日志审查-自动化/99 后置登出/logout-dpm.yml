@@ -1,0 +1,20 @@
+info:
+  name: logout-dpm
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{host}}/public_ws/sys/user/logout"
+  body:
+    type: json
+    data: "{}"
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

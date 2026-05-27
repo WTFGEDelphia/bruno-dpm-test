@@ -1,0 +1,51 @@
+info:
+  name: 06 上传领导批示2
+  type: http
+  seq: 6
+  tags:
+    - 日志请查
+    - 自动化
+    - P2
+    - 附件计数
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/attachments/upload?requestId={{attachmentTypeCountRequestId}}&attachmentType=LEADER_DIRECTIVE"
+  body:
+    type: multipart-form
+    data:
+      - name: file
+        type: file
+        value:
+          - files/fixtures/leader-directive-2.csv
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("第 2 个 LEADER_DIRECTIVE 上传成功", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data).to.be.a("number");
+          bru.setVar("typeCountDirective2Id", String(json.data));
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data
+        method: jsonq
+      variable:
+        name: typeCountDirective2Id
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,64 @@
+info:
+  name: 01 初始化草稿
+  type: http
+  seq: 1
+  tags:
+    - 日志请查
+    - 自动化
+    - P0
+    - 草稿链路
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/draft"
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function body() {
+          return res.getBody();
+        }
+
+        function expectSuccess() {
+          expect(res.getStatus()).to.equal(200);
+          const json = body();
+          expect(json).to.be.an("object");
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          return json;
+        }
+
+        test("初始化草稿返回真实申请ID", () => {
+          const json = expectSuccess();
+          expect(json.data).to.be.a("number");
+          expect(json.data).to.be.greaterThan(0);
+          bru.setVar("draftId", String(json.data));
+          bru.setVar("requestId", String(json.data));
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data
+        method: jsonq
+      variable:
+        name: draftId
+        scope: runtime
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data
+        method: jsonq
+      variable:
+        name: requestId
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

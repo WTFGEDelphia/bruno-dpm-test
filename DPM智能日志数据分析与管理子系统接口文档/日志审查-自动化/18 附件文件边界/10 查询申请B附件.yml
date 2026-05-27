@@ -1,0 +1,50 @@
+info:
+  name: 10 查询申请B附件
+  type: http
+  seq: 10
+  tags:
+    - 日志请查
+    - 自动化
+    - P2
+    - 附件边界
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{fileBoundaryRequestBId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function activeApplicationAttachments(attachments) {
+          return (attachments || []).filter(item => item.attachmentType === "APPLICATION" && item.deleted !== true);
+        }
+
+        test("申请 B 包含 png/jpg/csv 三个允许扩展名附件", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          const attachments = activeApplicationAttachments(json.data.attachments);
+          expect(attachments).to.have.length(3);
+          expect(attachments.map(item => item.fileName)).to.include("allowed-attachment.png");
+          expect(attachments.map(item => item.fileName)).to.include("allowed-attachment.jpg");
+          expect(attachments.map(item => item.fileName)).to.include("log-request-application.csv");
+          expect(JSON.stringify(json.data.attachments || [])).to.not.contain("storagePath");
+          expect(JSON.stringify(json.data.attachments || [])).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

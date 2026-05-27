@@ -1,0 +1,51 @@
+info:
+  name: 08 省厅已办包含补传申请
+  type: http
+  seq: 8
+  tags:
+    - 日志请查
+    - 自动化
+    - P0
+    - 紧急审批
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/province/done/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "requestNo": "{{urgentRequestNo}}",
+        "status": "COMPLETED",
+        "urgent": true,
+        "targetOrgId": "{{targetOrgId}}"
+      }
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("省厅已办包含补传完成的紧急申请", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          const requestId = Number(bru.getVar("urgentRequestId"));
+          const records = json.data.records || [];
+          const matched = records.find(item => item.id === requestId);
+          expect(matched, "省厅已办应包含紧急申请").to.exist;
+          expect(matched.status).to.equal("COMPLETED");
+          expect(matched.directiveStatus).to.equal("UPLOADED");
+          expect(matched.urgent).to.equal(true);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

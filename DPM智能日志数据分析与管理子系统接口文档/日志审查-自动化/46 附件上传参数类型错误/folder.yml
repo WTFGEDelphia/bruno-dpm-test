@@ -1,0 +1,11 @@
+info:
+  name: 46 附件上传参数类型错误
+  type: folder
+  seq: 46
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 附件上传参数类型错误链路。覆盖 multipart 上传接口的 requestId 类型转换和 attachmentType 枚举解析错误。
+  上传失败不能返回附件 ID，且不能泄露框架异常、本地路径或 storagePath。

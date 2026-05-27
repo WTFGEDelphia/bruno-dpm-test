@@ -1,0 +1,43 @@
+info:
+  name: 03 省厅不同意驳回
+  type: http
+  seq: 3
+  tags:
+    - 日志请查
+    - 自动化
+    - P0
+    - 驳回整改
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/approve"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{rejectResubmitRequestId}},
+        "decision": "不同意",
+        "opinion": "申请材料不完整，请补充说明后重新提交",
+        "directiveAttachmentIds": []
+      }
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("省厅不同意驳回成功", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data).to.equal(true);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

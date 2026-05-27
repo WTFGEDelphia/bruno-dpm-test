@@ -1,0 +1,45 @@
+info:
+  name: 04 同意并绑定两个批示
+  type: http
+  seq: 4
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 领导批示
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/approve"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{multiDirectiveRequestId}},
+        "decision": "同意",
+        "opinion": "多领导批示绑定校验-同意审批",
+        "directiveAttachmentIds": [
+          {{multiDirectiveFirstId}},
+          {{multiDirectiveSecondId}}
+        ]
+      }
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("同意并绑定两个领导批示成功", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(json.data).to.equal(true);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,52 @@
+info:
+  name: 05 第4个同类型附件被拒绝
+  type: http
+  seq: 5
+  tags:
+    - 日志请查
+    - 自动化
+    - P2
+    - 附件
+    - 数量限制
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/attachments/upload?requestId={{attachmentLimitRequestId}}&attachmentType=APPLICATION"
+  body:
+    type: multipart-form
+    data:
+      - name: file
+        type: file
+        value:
+          - files/fixtures/application-attachment-4.csv
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function bodyText() {
+          return JSON.stringify(res.getBody());
+        }
+
+        test("第 4 个 APPLICATION 附件被业务拒绝", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.not.equal(200);
+          expect(json.reason || json.message || bodyText()).to.contain("最多3个");
+          expect(json.data).to.not.be.a("number");
+        });
+
+        test("附件数量限制失败响应不泄露存储路径", () => {
+          const text = bodyText();
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

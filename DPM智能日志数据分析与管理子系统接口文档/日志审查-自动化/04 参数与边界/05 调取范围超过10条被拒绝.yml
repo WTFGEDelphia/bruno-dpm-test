@@ -1,0 +1,64 @@
+info:
+  name: 05 调取范围超过10条被拒绝
+  type: http
+  seq: 5
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 参数边界
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/create"
+  body:
+    type: json
+    data: |-
+      {
+        "targetOrgId": "{{targetOrgId}}",
+        "targetOrgName": "{{targetOrgName}}",
+        "validDays": {{validDays}},
+        "urgent": false,
+        "requestReason": "{{requestReason}}-范围超过10条",
+        "scopes": [
+          { "systemRange": "系统01", "logStartTime": "{{logStartTime}}", "logEndTime": "{{logEndTime}}" },
+          { "systemRange": "系统02", "logStartTime": "{{logStartTime}}", "logEndTime": "{{logEndTime}}" },
+          { "systemRange": "系统03", "logStartTime": "{{logStartTime}}", "logEndTime": "{{logEndTime}}" },
+          { "systemRange": "系统04", "logStartTime": "{{logStartTime}}", "logEndTime": "{{logEndTime}}" },
+          { "systemRange": "系统05", "logStartTime": "{{logStartTime}}", "logEndTime": "{{logEndTime}}" },
+          { "systemRange": "系统06", "logStartTime": "{{logStartTime}}", "logEndTime": "{{logEndTime}}" },
+          { "systemRange": "系统07", "logStartTime": "{{logStartTime}}", "logEndTime": "{{logEndTime}}" },
+          { "systemRange": "系统08", "logStartTime": "{{logStartTime}}", "logEndTime": "{{logEndTime}}" },
+          { "systemRange": "系统09", "logStartTime": "{{logStartTime}}", "logEndTime": "{{logEndTime}}" },
+          { "systemRange": "系统10", "logStartTime": "{{logStartTime}}", "logEndTime": "{{logEndTime}}" },
+          { "systemRange": "系统11", "logStartTime": "{{logStartTime}}", "logEndTime": "{{logEndTime}}" }
+        ]
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function expectBusinessDenied() {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.not.equal(200);
+          const text = JSON.stringify(json);
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+          return json;
+        }
+
+        test("调取范围超过10条被拒绝", () => {
+          const json = expectBusinessDenied();
+          expect(json.reason).to.contain("调取范围");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

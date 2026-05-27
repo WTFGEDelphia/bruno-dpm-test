@@ -1,0 +1,50 @@
+info:
+  name: 07 作废态附件仍未删除
+  type: http
+  seq: 7
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 附件
+    - 状态流转
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{voidedAttachmentRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("作废态附件维护失败后状态和既有附件不变", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const data = json.data;
+          expect(data.id).to.equal(Number(bru.getVar("voidedAttachmentRequestId")));
+          expect(data.status).to.equal("VOIDED");
+          const attachmentId = Number(bru.getVar("voidedApplicationAttachmentId"));
+          const matched = (data.attachments || []).find(item => item.id === attachmentId);
+          expect(matched, "作废前已上传申请附件应仍保留").to.exist;
+          expect(matched.attachmentType).to.equal("APPLICATION");
+          expect(matched.deleted).to.not.equal(true);
+          expect(matched.downloadable).to.not.equal(false);
+          expect(JSON.stringify(data)).to.not.contain("storagePath");
+          expect(JSON.stringify(data)).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

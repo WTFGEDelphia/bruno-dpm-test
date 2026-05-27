@@ -1,0 +1,48 @@
+info:
+  name: 03 宽时间范围命中
+  type: http
+  seq: 3
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 列表筛选
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/city/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "requestNo": "{{createdRangeRequestNo}}",
+        "startCreatedTime": "2000-01-01 00:00:00",
+        "endCreatedTime": "2999-12-31 23:59:59"
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("宽创建时间范围能命中当前申请", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const requestId = Number(bru.getVar("createdRangeRequestId"));
+          const records = json.data.records || [];
+          const matched = records.find(item => item.id === requestId);
+          expect(matched, "宽时间范围应命中当前申请").to.exist;
+          expect(matched.requestNo).to.equal(bru.getVar("createdRangeRequestNo"));
+          expect(matched.createdTime).to.be.a("string").and.not.empty;
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

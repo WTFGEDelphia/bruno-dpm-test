@@ -1,0 +1,47 @@
+info:
+  name: 04 他人按编号列表不可见
+  type: http
+  seq: 4
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 列表权限
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/city/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "requestNo": "{{listIsolationRequestNo}}",
+        "status": "PENDING"
+      }
+  auth:
+    type: bearer
+    token: "{{otherApplicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("其他申请人按申请编号查询不到 A 的申请", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          const requestId = Number(bru.getVar("listIsolationRequestId"));
+          const records = json.data.records || [];
+          expect(records.some(item => item.id === requestId)).to.equal(false);
+          expect(records.some(item => item.requestNo === bru.getVar("listIsolationRequestNo"))).to.equal(false);
+          expect(JSON.stringify(records)).to.not.contain("列表筛选权限隔离");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

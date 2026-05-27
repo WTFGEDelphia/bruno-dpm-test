@@ -1,0 +1,10 @@
+info:
+  name: 10 导出权限与列表过滤
+  type: folder
+  seq: 10
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 导出权限与列表过滤链路。准备待办和已办数据后，分别校验城市侧、省厅待办、省厅已办导出文件流；同时校验申请人不能导出省厅列表、未知 pageType 被业务拒绝。

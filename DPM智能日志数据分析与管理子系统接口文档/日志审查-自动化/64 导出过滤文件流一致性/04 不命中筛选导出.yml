@@ -1,0 +1,49 @@
+info:
+  name: 04 不命中筛选导出
+  type: http
+  seq: 4
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 导出
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/export"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "requestNo": "{{exportConsistencyRequestNo}}",
+        "status": "COMPLETED",
+        "urgent": false,
+        "targetOrgId": "{{targetOrgId}}",
+        "pageType": "CITY"
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("不命中筛选仍返回 Excel 文件流但体积小于命中导出", () => {
+          expect(res.getStatus()).to.equal(200);
+          expect(String(res.getHeader("content-disposition") || "")).to.contain("attachment;");
+          expect(String(res.getHeader("content-disposition") || "")).to.contain("log-requests.xlsx");
+          expect(String(res.getHeader("content-type") || "")).to.contain("spreadsheetml.sheet");
+          const missSize = res.getSize().body;
+          const hitSize = Number(bru.getVar("exportConsistencyHitSize"));
+          expect(missSize).to.be.greaterThan(0);
+          expect(hitSize).to.be.greaterThan(missSize);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

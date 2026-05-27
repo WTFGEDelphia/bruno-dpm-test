@@ -1,0 +1,11 @@
+info:
+  name: 88 附件删除错配与重复删除校验
+  type: folder
+  seq: 88
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 附件删除错配与重复删除校验。覆盖删除接口中 requestId、attachmentId、attachmentType 三元组必须一致；错申请、错类型不得误删原附件。
+  同时覆盖已删除附件重复删除必须被拒绝，失败响应不能误返回 data=true，且不能泄露本地路径或 storagePath。

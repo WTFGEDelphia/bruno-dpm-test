@@ -1,0 +1,11 @@
+info:
+  name: 71 列表创建时间范围筛选校验
+  type: folder
+  seq: 71
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 列表创建时间范围筛选校验链路。创建申请后按申请编号叠加创建时间范围筛选，验证宽时间范围命中，未来时间范围和过早结束时间范围均不命中。
+  用例覆盖 city/page 的 startCreatedTime/endCreatedTime 查询语义。

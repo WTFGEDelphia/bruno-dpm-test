@@ -1,0 +1,11 @@
+info:
+  name: 57 省厅待办已办列表边界
+  type: folder
+  seq: 57
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 省厅待办/已办列表边界链路。验证 PENDING 只出现在待办，REJECTED 只出现在已办。
+  用申请编号做正反向筛选，防止待办/已办列表状态边界回归。

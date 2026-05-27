@@ -1,0 +1,11 @@
+info:
+  name: 36 数字参数类型错误
+  type: folder
+  seq: 36
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 数字参数类型错误链路。覆盖 JSON 请求体中的 id 以及下载 JSON 请求体 attachmentId 传入非数字字符串时的统一错误。
+  失败响应不能退化为 HTML/Whitelabel，不能泄露异常类名或路径；下载接口失败时不能返回文件流。

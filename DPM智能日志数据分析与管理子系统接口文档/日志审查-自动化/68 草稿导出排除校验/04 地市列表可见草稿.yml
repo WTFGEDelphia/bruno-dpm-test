@@ -1,0 +1,48 @@
+info:
+  name: 04 地市列表可见草稿
+  type: http
+  seq: 4
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 草稿
+    - 列表
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/city/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "requestNo": "{{draftExportRequestNo}}",
+        "status": "DRAFT"
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("有意义草稿在本人地市列表可见", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const requestId = Number(bru.getVar("draftExportDraftId"));
+          const records = json.data.records || [];
+          const matched = records.find(item => item.id === requestId);
+          expect(matched, "有意义草稿应在本人列表中可继续编辑").to.exist;
+          expect(matched.status).to.equal("DRAFT");
+          expect(matched.statusDisplay).to.equal("草稿");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

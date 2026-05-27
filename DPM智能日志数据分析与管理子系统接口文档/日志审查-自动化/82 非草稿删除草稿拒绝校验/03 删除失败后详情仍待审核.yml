@@ -1,0 +1,46 @@
+info:
+  name: 03 删除失败后详情仍待审核
+  type: http
+  seq: 3
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 草稿
+    - 状态流转
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{nonDraftDeleteRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("删除草稿失败后申请仍为待审核", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const data = json.data;
+          expect(data.id).to.equal(Number(bru.getVar("nonDraftDeleteRequestId")));
+          expect(data.status).to.equal("PENDING");
+          expect(data.statusDisplay).to.equal("待审核");
+          expect(data.flowLogs || []).to.have.length(1);
+          expect(JSON.stringify(data.flowLogs || [])).to.contain("提交日志请查申请");
+          expect(JSON.stringify(data.flowLogs || [])).to.not.contain("删除日志请查草稿");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

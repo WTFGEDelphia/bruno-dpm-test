@@ -1,0 +1,49 @@
+info:
+  name: 07 无范围草稿提交被拒绝
+  type: http
+  seq: 7
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 草稿提交
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/submit"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{emptyScopeDraftId}},
+        "targetOrgId": "{{targetOrgId}}",
+        "targetOrgName": "{{targetOrgName}}",
+        "validDays": {{validDays}},
+        "urgent": false,
+        "requestReason": "草稿提交前校验-缺少调取范围",
+        "scopes": []
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("无调取范围草稿不能提交为正式申请", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json).to.be.an("object");
+          expect(json.code).to.not.equal(200);
+          const text = JSON.stringify(json);
+          expect(text).to.contain("调取范围");
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

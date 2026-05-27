@@ -1,0 +1,11 @@
+info:
+  name: 90 补传领导批示附件业务校验
+  type: folder
+  seq: 90
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 补传领导批示附件业务校验。覆盖 COMPLETED/PENDING 紧急待补传申请补传时，directiveAttachmentIds 必须属于当前申请、类型必须为 LEADER_DIRECTIVE、且必须未删除。
+  跨申请领导批示、当前申请 APPLICATION 附件、已删除领导批示均不得补传成功；失败后状态、授权和补传流程日志保持不变。

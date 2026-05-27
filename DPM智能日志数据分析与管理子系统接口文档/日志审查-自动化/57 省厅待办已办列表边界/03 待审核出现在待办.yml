@@ -1,0 +1,45 @@
+info:
+  name: 03 待审核出现在待办
+  type: http
+  seq: 3
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 省厅列表
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/province/todo/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "requestNo": "{{provinceBoundaryRequestNo}}"
+      }
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("待审核申请应出现在省厅待办", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const requestId = Number(bru.getVar("provinceBoundaryRequestId"));
+          const records = json.data.records || [];
+          const matched = records.find(item => item.id === requestId);
+          expect(matched, "省厅待办应包含待审核申请").to.exist;
+          expect(matched.status).to.equal("PENDING");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

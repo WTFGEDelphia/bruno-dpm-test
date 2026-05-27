@@ -1,0 +1,10 @@
+info:
+  name: 69 JSON接口拒绝multipart契约
+  type: folder
+  seq: 69
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 JSON-only 接口契约校验。覆盖 create、submit、draft/delete、approve、directive/supplement 这些 @RequestBody 接口收到 multipart/form-data 时必须统一拒绝，不得创建申请、不得提交草稿、不得删除草稿、不得审批、不得补传，也不得返回 HTML、文件流或泄露本地路径。

@@ -1,0 +1,48 @@
+info:
+  name: 11 作废态上传失败后状态不变
+  type: http
+  seq: 11
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 领导批示
+    - 状态流转
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{directiveUploadWithdrawnRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("作废态领导批示上传失败后状态和附件不变", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const data = json.data;
+          expect(data.id).to.equal(Number(bru.getVar("directiveUploadWithdrawnRequestId")));
+          expect(data.status).to.equal("VOIDED");
+          expect(data.directiveStatus).to.equal("NONE");
+          expect(data.authorization || null).to.equal(null);
+          const directives = (data.attachments || []).filter(item => item.attachmentType === "LEADER_DIRECTIVE");
+          expect(directives).to.have.length(0);
+          expect(JSON.stringify(data)).to.not.contain("storagePath");
+          expect(JSON.stringify(data)).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

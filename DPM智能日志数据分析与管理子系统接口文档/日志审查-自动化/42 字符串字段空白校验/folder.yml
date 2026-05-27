@@ -1,0 +1,11 @@
+info:
+  name: 42 字符串字段空白校验
+  type: folder
+  seq: 42
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 字符串字段空白校验链路。覆盖字段存在但传入空白字符串时的统一错误。
+  创建申请接口取样 targetOrgId、targetOrgName、requestReason 和 scopes.systemRange。

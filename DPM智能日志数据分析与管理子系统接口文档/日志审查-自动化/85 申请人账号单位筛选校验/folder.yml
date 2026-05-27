@@ -1,0 +1,10 @@
+info:
+  name: 85 申请人账号单位筛选校验
+  type: folder
+  seq: 85
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 申请人账号与单位筛选校验。覆盖 city/page 支持的 applicantAccountId 和 applicantOrgId 正向筛选，确保筛选条件只收窄本人可见范围且能命中当前申请。运行前需要配置 applicantAccountId/applicantOrgId 为 applicantToken 对应主体。

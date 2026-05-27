@@ -1,0 +1,49 @@
+info:
+  name: 05 他人不能作废申请
+  type: http
+  seq: 5
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 动作权限
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/void"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{actionPermissionRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{otherApplicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function bodyText() {
+          return JSON.stringify(res.getBody());
+        }
+
+        test("其他申请人作废申请被拒绝", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.not.equal(200);
+          expect(json.reason || json.message || bodyText()).to.contain("仅申请人本人");
+        });
+
+        test("他人作废失败响应不泄露存储路径", () => {
+          const text = bodyText();
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

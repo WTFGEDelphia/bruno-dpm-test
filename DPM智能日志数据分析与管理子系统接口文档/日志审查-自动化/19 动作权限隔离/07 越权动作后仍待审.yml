@@ -1,0 +1,46 @@
+info:
+  name: 07 越权动作后仍待审
+  type: http
+  seq: 7
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 动作权限
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{actionPermissionRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("越权动作失败后申请仍为 PENDING 且无错误流程日志", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data.id).to.equal(Number(bru.getVar("actionPermissionRequestId")));
+          expect(json.data.status).to.equal("PENDING");
+          const text = JSON.stringify(json.data.flowLogs || []);
+          expect(text).to.not.contain("省厅越权整改续办");
+          expect(text).to.not.contain("他人越权整改续办");
+          expect(text).to.not.contain("作废日志请查申请");
+          expect(text).to.not.contain("撤回日志请查申请");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

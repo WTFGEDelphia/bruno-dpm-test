@@ -1,0 +1,40 @@
+info:
+  name: 09 作废已撤回申请
+  type: http
+  seq: 9
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 状态流转
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/void"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{stateGuardRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("已撤回申请作废成功", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data).to.equal(true);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

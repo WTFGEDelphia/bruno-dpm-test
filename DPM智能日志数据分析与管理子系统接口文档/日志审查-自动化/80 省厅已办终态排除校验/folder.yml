@@ -1,0 +1,11 @@
+info:
+  name: 80 省厅已办终态排除校验
+  type: folder
+  seq: 80
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 省厅已办终态排除校验。覆盖 WITHDRAWN 和 VOIDED 属于申请人侧终态，不应进入省厅已办列表。
+  该组用于补齐 log-request-approval 中“省厅已办排除 DRAFT/WITHDRAWN/VOIDED”的状态边界。

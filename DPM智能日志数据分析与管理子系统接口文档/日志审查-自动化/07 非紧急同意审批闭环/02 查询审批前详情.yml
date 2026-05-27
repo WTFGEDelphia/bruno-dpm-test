@@ -1,0 +1,54 @@
+info:
+  name: 02 查询审批前详情
+  type: http
+  seq: 2
+  tags:
+    - 日志请查
+    - 自动化
+    - P0
+    - 审批闭环
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{approvalRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("审批前为 PENDING 且无授权", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data.id).to.equal(Number(bru.getVar("approvalRequestId")));
+          expect(json.data.status).to.equal("PENDING");
+          expect(json.data.urgent).to.equal(false);
+          expect(json.data.authorization || null).to.equal(null);
+          expect(json.data.requestNo).to.be.a("string").and.not.empty;
+          bru.setVar("approvalRequestNo", json.data.requestNo);
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data.requestNo
+        method: jsonq
+      variable:
+        name: approvalRequestNo
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

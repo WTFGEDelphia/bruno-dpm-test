@@ -1,0 +1,11 @@
+info:
+  name: 75 正式附件流程日志校验
+  type: folder
+  seq: 75
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 正式附件流程日志校验链路。正式 PENDING 申请上传并删除 APPLICATION 附件，校验当前附件列表移除已删除附件，同时流程日志保留上传和删除动作。
+  用例和草稿附件无流程日志场景互补，覆盖正式业务流的附件日志要求。

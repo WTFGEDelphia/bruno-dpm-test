@@ -1,0 +1,11 @@
+info:
+  name: 74 多领导批示绑定校验
+  type: folder
+  seq: 74
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 多领导批示绑定校验链路。非紧急申请上传两个 LEADER_DIRECTIVE 附件，审批时一次性绑定两个，详情回查当前附件和审批流程日志均保留两个领导批示引用。
+  用例覆盖多附件绑定的正向业务语义。

@@ -1,0 +1,11 @@
+info:
+  name: 52 动作接口申请ID显式null校验
+  type: folder
+  seq: 52
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 动作接口申请 ID 显式 null 校验链路。覆盖基于 LogRequestIdVO 的动作接口 id=null 时的统一错误。
+  与缺少 ID、ID 非数字用例互补，失败时不能误返回 data=true。

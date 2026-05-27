@@ -1,0 +1,46 @@
+info:
+  name: 07 跨申请批示不能补传A
+  type: http
+  seq: 7
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 补传
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/directive/supplement"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{supplementValidationRequestAId}},
+        "directiveAttachmentIds": [{{supplementValidationCrossDirectiveId}}]
+      }
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("跨申请领导批示补传A被拒绝", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.not.equal(200);
+          const text = JSON.stringify(json);
+          expect(json.reason || json.message || text).to.contain("不属于当前申请");
+          expect(json.data).to.not.equal(true);
+          expect(text.toLowerCase()).to.not.contain("<html");
+          expect(text).to.not.contain("Whitelabel Error Page");
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

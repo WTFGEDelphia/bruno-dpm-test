@@ -1,0 +1,58 @@
+info:
+  name: 02 查询空草稿详情
+  type: http
+  seq: 2
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 草稿
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{emptyDraftListId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("空草稿本人详情可访问且无有效业务内容", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const data = json.data;
+          expect(data.id).to.equal(Number(bru.getVar("emptyDraftListId")));
+          expect(data.status).to.equal("DRAFT");
+          expect(data.statusDisplay).to.equal("草稿");
+          expect(data.requestReason || "").to.equal("");
+          expect(data.scopes || []).to.have.length(0);
+          expect(data.attachments || []).to.have.length(0);
+          expect(data.flowLogs || []).to.have.length(0);
+          expect(JSON.stringify(data)).to.not.contain("storagePath");
+          expect(JSON.stringify(data)).to.not.contain("/Users/");
+          bru.setVar("emptyDraftListRequestNo", data.requestNo);
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data.requestNo
+        method: jsonq
+      variable:
+        name: emptyDraftListRequestNo
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

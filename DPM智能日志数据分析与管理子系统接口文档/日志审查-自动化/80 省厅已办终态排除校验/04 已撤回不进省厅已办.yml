@@ -1,0 +1,45 @@
+info:
+  name: 04 已撤回不进省厅已办
+  type: http
+  seq: 4
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 省厅列表
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/province/done/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "requestNo": "{{doneExcludeWithdrawRequestNo}}",
+        "status": "WITHDRAWN"
+      }
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("已撤回申请不进入省厅已办", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const requestId = Number(bru.getVar("doneExcludeWithdrawRequestId"));
+          const records = json.data.records || [];
+          expect(records.find(item => item.id === requestId)).to.not.exist;
+          expect(records.some(item => item.status === "WITHDRAWN")).to.equal(false);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

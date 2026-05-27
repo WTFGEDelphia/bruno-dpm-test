@@ -1,0 +1,11 @@
+info:
+  name: 86 省厅申请附件维护拒绝校验
+  type: folder
+  seq: 86
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 省厅申请附件维护拒绝校验。覆盖省厅账号不能上传或删除 APPLICATION 申请附件，失败后申请人已上传的申请附件仍保持可下载、未删除。
+  该组补齐 APPLICATION 附件“仅申请人本人可维护”的省厅主体负向边界。

@@ -1,0 +1,43 @@
+info:
+  name: 03 紧急同意无批示
+  type: http
+  seq: 3
+  tags:
+    - 日志请查
+    - 自动化
+    - P0
+    - 紧急审批
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/approve"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{urgentRequestId}},
+        "decision": "同意",
+        "opinion": "紧急申请先行同意，后续补传领导批示",
+        "directiveAttachmentIds": []
+      }
+  auth:
+    type: bearer
+    token: "{{provinceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("紧急申请无批示同意成功", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data).to.equal(true);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,54 @@
+info:
+  name: 05 申请人不能省厅已办导出
+  type: http
+  seq: 5
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 导出
+    - 权限
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/export"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "requestNo": "{{doneExportPermissionRequestNo}}",
+        "status": "COMPLETED",
+        "urgent": true,
+        "targetOrgId": "{{targetOrgId}}",
+        "pageType": "PROVINCE_DONE"
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("申请人省厅已办导出被拒绝且不返回文件流", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.not.equal(200);
+          const text = JSON.stringify(json);
+          expect(json.reason || json.message || text).to.contain("无权");
+          expect(text).to.not.contain(bru.getVar("doneExportPermissionRequestNo"));
+          expect(text).to.not.contain("省厅已办导出权限");
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+          expect(String(res.getHeader("content-disposition") || "")).to.not.contain("attachment;");
+          expect(String(res.getHeader("content-disposition") || "")).to.not.contain("log-requests.xlsx");
+          expect(String(res.getHeader("content-type") || "")).to.not.contain("spreadsheetml.sheet");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

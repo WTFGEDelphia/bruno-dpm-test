@@ -1,0 +1,47 @@
+info:
+  name: 04 审批multipart失败后仍待审
+  type: http
+  seq: 4
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 接口契约
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{jsonOnlyContractRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("审批 multipart 被拒绝后申请未被审批或绑定附件", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          const data = json.data;
+          expect(data.id).to.equal(Number(bru.getVar("jsonOnlyContractRequestId")));
+          expect(data.status).to.equal("PENDING");
+          expect(data.directiveStatus).to.equal("NONE");
+          expect(data.authorization || null).to.equal(null);
+          const text = JSON.stringify(data);
+          expect(text).to.not.contain("审批接口误用multipart");
+          expect(text).to.not.contain("处置办理：同意");
+          expect(text).to.not.contain("leader-directive.csv");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

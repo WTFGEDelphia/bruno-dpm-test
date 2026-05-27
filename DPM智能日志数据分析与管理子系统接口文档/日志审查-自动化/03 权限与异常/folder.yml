@@ -1,0 +1,11 @@
+info:
+  name: 03 权限与异常
+  type: folder
+  seq: 3
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 权限与异常链路。先由申请人创建一条待审核申请，再验证省厅账号不能新建、申请人不能审批/省厅列表、其他申请人不能查看或撤回当前申请。
+  运行前需要 applicantToken、provinceToken、otherApplicantToken 与 targetOrgId。

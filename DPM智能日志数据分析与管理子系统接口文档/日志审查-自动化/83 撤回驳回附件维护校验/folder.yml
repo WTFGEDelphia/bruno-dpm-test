@@ -1,0 +1,10 @@
+info:
+  name: 83 撤回驳回附件维护校验
+  type: folder
+  seq: 83
+
+request:
+  auth: inherit
+
+docs: |-
+  P1 撤回/驳回状态申请附件维护校验。覆盖 APPLICATION 附件在 WITHDRAWN 和 REJECTED 状态仍允许申请人本人上传和删除，删除后当前附件列表不再展示已删除附件。

@@ -1,0 +1,45 @@
+info:
+  name: 04 本人查看草稿详情
+  type: http
+  seq: 4
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 草稿
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{draftIsolationDraftId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("本人可查看草稿且无流程日志", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data.id).to.equal(Number(bru.getVar("draftIsolationDraftId")));
+          expect(json.data.status).to.equal("DRAFT");
+          expect(json.data.requestReason).to.contain("草稿隔离");
+          expect(json.data.flowLogs || []).to.have.length(0);
+          expect(JSON.stringify(json.data)).to.not.contain("storagePath");
+          expect(JSON.stringify(json.data)).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,66 @@
+info:
+  name: 02 整改续办有效期非数字
+  type: http
+  seq: 2
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 参数类型
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/resubmit"
+  body:
+    type: json
+    data: |-
+      {
+        "id": 1,
+        "targetOrgId": "{{targetOrgId}}",
+        "targetOrgName": "{{targetOrgName}}",
+        "validDays": "not-a-number",
+        "urgent": false,
+        "requestReason": "整改续办字段类型错误-有效期非数字",
+        "scopes": [
+          {
+            "systemRange": "{{systemRange}}",
+            "logStartTime": "{{logStartTime}}",
+            "logEndTime": "{{logEndTime}}"
+          }
+        ]
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function expectResubmitTypeDenied() {
+          expect(res.getStatus()).to.equal(200);
+          expect(String(res.getHeader("content-type") || "").toLowerCase()).to.not.contain("text/html");
+          const json = res.getBody();
+          expect(json).to.be.an("object");
+          expect(json.code).to.not.equal(200);
+          const text = JSON.stringify(json);
+          expect(text.toLowerCase()).to.not.contain("<html");
+          expect(text).to.not.contain("Whitelabel Error Page");
+          expect(text).to.not.contain("HttpMessageNotReadableException");
+          expect(text).to.not.contain("InvalidFormatException");
+          expect(text).to.not.contain("MismatchedInputException");
+          expect(text).to.not.contain("NumberFormatException");
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+          expect(json.data).to.not.equal(true);
+        }
+
+        test("整改续办 validDays 非数字返回统一错误", () => {
+          expectResubmitTypeDenied();
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

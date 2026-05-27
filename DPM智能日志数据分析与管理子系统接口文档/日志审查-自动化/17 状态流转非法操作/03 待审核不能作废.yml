@@ -1,0 +1,49 @@
+info:
+  name: 03 待审核不能作废
+  type: http
+  seq: 3
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 状态流转
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/void"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{stateGuardRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        function bodyText() {
+          return JSON.stringify(res.getBody());
+        }
+
+        test("PENDING 申请不能直接作废", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.not.equal(200);
+          expect(json.reason || json.message || bodyText()).to.contain("仅已驳回或已撤回");
+        });
+
+        test("待审核作废失败响应不泄露存储路径", () => {
+          const text = bodyText();
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("/Users/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
