@@ -18,10 +18,9 @@ http:
         "id": 1,
         "opinion": "审批缺少结论"
       }
-  auth:
-    type: bearer
-    token: "{{provinceToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

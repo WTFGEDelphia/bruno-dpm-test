@@ -21,10 +21,9 @@ http:
         "startCreatedTime": "2000-01-01 00:00:00",
         "endCreatedTime": "2999-12-31 23:59:59"
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

@@ -19,10 +19,9 @@ http:
         "pageSize": 10,
         "startCreatedTime": "2026/05/01 00:00:00"
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

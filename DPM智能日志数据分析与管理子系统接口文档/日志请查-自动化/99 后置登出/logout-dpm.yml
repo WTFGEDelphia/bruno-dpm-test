@@ -9,10 +9,9 @@ http:
   body:
     type: json
     data: "{}"
-  auth:
-    type: bearer
-    token: "{{provinceToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 settings:
   encodeUrl: true
   timeout: 0

@@ -19,10 +19,9 @@ http:
         "requestReason": "草稿提交前校验-部分字段",
         "scopes": []
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

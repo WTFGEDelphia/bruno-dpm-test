@@ -19,10 +19,9 @@ http:
         "requestReason": "{{requestReason}}-空草稿列表展示",
         "scopes": []
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

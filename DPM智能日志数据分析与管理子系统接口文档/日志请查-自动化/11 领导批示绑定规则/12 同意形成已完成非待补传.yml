@@ -20,10 +20,9 @@ http:
         "opinion": "同意并绑定领导批示形成非待补传状态",
         "directiveAttachmentIds": [{{directiveRuleCompletedAttachmentId}}]
       }
-  auth:
-    type: bearer
-    token: "{{provinceToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

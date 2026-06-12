@@ -19,10 +19,9 @@ http:
         "pageSize": 10,
         "urgent": "not-a-boolean"
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

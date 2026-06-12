@@ -20,10 +20,9 @@ http:
         "opinion": "紧急申请先同意用于省厅已办导出过滤",
         "directiveAttachmentIds": []
       }
-  auth:
-    type: bearer
-    token: "{{provinceToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

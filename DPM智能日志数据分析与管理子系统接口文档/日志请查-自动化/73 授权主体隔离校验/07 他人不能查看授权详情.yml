@@ -17,10 +17,9 @@ http:
       {
         "id": {{authSubjectRequestId}}
       }
-  auth:
-    type: bearer
-    token: "{{otherApplicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

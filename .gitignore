@@ -2,6 +2,8 @@
 **/.DS_Store
 **/target/
 **/*.log
+.claude
+.codegraph
 
 DPM智能日志数据分析与管理子系统接口文档/environments/* Local.yml
 DPM智能日志数据分析与管理子系统接口文档/environments/* Local.yaml

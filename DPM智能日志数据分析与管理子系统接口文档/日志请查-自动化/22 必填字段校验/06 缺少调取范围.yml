@@ -21,10 +21,9 @@ http:
         "urgent": false,
         "requestReason": "{{requestReason}}-缺少调取范围"
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

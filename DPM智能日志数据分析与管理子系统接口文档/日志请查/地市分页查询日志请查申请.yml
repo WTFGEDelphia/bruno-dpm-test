@@ -27,10 +27,9 @@ http:
         "startCreatedTime": "",
         "endCreatedTime": ""
       }
-  auth:
-    type: bearer
-    token: "{{token}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 settings:
   encodeUrl: true
   timeout: 0

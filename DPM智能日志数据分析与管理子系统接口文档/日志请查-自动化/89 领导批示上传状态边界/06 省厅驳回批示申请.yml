@@ -20,10 +20,9 @@ http:
         "decision": "不同意",
         "opinion": "驳回后校验领导批示上传状态边界"
       }
-  auth:
-    type: bearer
-    token: "{{provinceToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

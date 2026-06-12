@@ -20,10 +20,9 @@ http:
         "opinion": "English decision AGREE should be accepted",
         "directiveAttachmentIds": [{{approvalCompatAgreeDirectiveId}}]
       }
-  auth:
-    type: bearer
-    token: "{{provinceToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

@@ -20,10 +20,9 @@ http:
         "opinion": "尝试绑定其他申请的领导批示",
         "directiveAttachmentIds": [{{directiveRuleCrossAttachmentId}}]
       }
-  auth:
-    type: bearer
-    token: "{{provinceToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

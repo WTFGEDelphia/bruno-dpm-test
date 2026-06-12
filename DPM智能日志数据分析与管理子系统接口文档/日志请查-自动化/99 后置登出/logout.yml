@@ -9,10 +9,9 @@ http:
   body:
     type: json
     data: "{}"
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: after-response

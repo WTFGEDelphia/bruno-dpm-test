@@ -17,8 +17,6 @@ http:
         "includeModule": false,
         "includeAllNode": false
       }
-  auth: inherit
-
 settings:
   encodeUrl: true
   timeout: 0

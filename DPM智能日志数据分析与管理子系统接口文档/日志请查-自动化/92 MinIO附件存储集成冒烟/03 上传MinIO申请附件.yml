@@ -19,10 +19,9 @@ http:
         type: file
         value:
           - files/fixtures/application-attachment-1.csv
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: before-request

@@ -21,10 +21,9 @@ http:
         "opinion": "紧急申请先同意，列表展示待补充批示",
         "directiveAttachmentIds": []
       }
-  auth:
-    type: bearer
-    token: "{{provinceToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

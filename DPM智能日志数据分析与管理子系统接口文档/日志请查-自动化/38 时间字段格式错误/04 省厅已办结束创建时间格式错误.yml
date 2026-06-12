@@ -19,10 +19,9 @@ http:
         "pageSize": 10,
         "endCreatedTime": "2026-05-02T00:00:00"
       }
-  auth:
-    type: bearer
-    token: "{{provinceToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

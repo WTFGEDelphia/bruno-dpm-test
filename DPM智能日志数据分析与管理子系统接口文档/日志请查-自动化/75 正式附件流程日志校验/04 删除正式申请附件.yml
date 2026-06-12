@@ -20,10 +20,9 @@ http:
         "attachmentId": {{formalAttachmentFlowAttachmentId}},
         "attachmentType": "APPLICATION"
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

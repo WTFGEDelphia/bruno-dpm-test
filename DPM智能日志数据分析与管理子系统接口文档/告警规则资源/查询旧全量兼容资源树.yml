@@ -1,0 +1,25 @@
+info:
+  name: 查询旧全量兼容资源树
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/alarm-rule-resources/all-data/tree"
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
+  body:
+    type: json
+    data: |-
+      {
+        "dimension": "AREA",
+        "compatPurpose": "ALARM_RULE_RESOURCE_MIGRATION",
+        "includeModule": false,
+        "includeAllNode": false
+      }
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

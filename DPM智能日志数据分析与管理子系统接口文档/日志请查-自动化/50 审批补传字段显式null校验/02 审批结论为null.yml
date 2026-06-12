@@ -19,10 +19,9 @@ http:
         "decision": null,
         "opinion": "审批字段显式null校验-结论"
       }
-  auth:
-    type: bearer
-    token: "{{provinceToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

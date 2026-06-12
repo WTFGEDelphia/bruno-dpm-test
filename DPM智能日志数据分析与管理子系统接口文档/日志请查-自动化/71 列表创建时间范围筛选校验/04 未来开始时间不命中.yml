@@ -20,10 +20,9 @@ http:
         "requestNo": "{{createdRangeRequestNo}}",
         "startCreatedTime": "2999-01-01 00:00:00"
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

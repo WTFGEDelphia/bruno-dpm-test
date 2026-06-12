@@ -20,10 +20,9 @@ http:
         "opinion": "申请材料不完整，请补充说明后重新提交",
         "directiveAttachmentIds": []
       }
-  auth:
-    type: bearer
-    token: "{{provinceToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

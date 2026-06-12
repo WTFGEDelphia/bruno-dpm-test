@@ -18,10 +18,9 @@ http:
         "id": null,
         "requestReason": "草稿保存字段校验-ID为null"
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

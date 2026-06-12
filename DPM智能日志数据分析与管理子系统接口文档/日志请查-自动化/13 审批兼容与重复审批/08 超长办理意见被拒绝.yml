@@ -20,10 +20,9 @@ http:
         "opinion": "{{longReasonPart1}}{{longReasonPart2}}{{longReasonPart3}}",
         "directiveAttachmentIds": []
       }
-  auth:
-    type: bearer
-    token: "{{provinceToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

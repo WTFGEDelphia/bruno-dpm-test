@@ -18,10 +18,9 @@ http:
         "id": "not-a-number",
         "requestReason": "草稿保存字段校验-ID非数字"
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

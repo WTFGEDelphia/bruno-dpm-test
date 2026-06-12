@@ -22,10 +22,9 @@ http:
         "requestReason": "调取范围字段类型错误-字符串",
         "scopes": "not-an-array"
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

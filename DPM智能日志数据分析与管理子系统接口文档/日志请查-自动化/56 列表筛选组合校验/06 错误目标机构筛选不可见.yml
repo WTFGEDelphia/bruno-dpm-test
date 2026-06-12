@@ -20,10 +20,9 @@ http:
         "requestNo": "{{filterComboRequestNo}}",
         "targetOrgId": "__not_the_target_org__"
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

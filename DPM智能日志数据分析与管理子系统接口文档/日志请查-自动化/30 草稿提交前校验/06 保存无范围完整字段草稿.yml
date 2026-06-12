@@ -23,10 +23,9 @@ http:
         "requestReason": "草稿提交前校验-缺少调取范围",
         "scopes": []
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

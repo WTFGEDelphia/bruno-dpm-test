@@ -9,7 +9,10 @@ http:
   body:
     type: json
     data: "{}"
-  auth: inherit
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
+
 
 settings:
   encodeUrl: true

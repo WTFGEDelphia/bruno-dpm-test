@@ -1,0 +1,24 @@
+info:
+  name: 查询组织树
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/query-support/organizations/tree"
+  body:
+    type: json
+    data: |-
+      {
+        "fullTree": false
+      }
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
+
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

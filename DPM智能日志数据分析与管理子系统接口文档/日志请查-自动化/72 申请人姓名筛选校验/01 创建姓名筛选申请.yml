@@ -29,10 +29,9 @@ http:
         ],
         "applicantName": "forged-applicant-name-should-be-ignored"
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

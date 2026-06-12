@@ -13,10 +13,9 @@ http:
       value: ""
       type: query
       description: 需要下载的日志请查附件记录ID
-  auth:
-    type: bearer
-    token: "{{token}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 settings:
   encodeUrl: true
   timeout: 0

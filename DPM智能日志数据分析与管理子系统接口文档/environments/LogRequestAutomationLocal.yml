@@ -1,22 +1,21 @@
 name: LogRequestAutomationLocal
 variables:
   - name: host
-    value: https://172.20.64.31:22500
+    value: https://172.20.64.29:22500
   - name: baseUrl
     value: https://172.20.64.29:22500/ilda
-    disabled: true
   - name: applicantToken
-    value: ""
+    value: 2deaceba-c5dd-4709-9429-282dba8c4190
   - name: provinceToken
     value: ""
   - name: otherApplicantToken
     value: ""
   - name: applicantAccountId
-    value: ""
+    value: 8BBE33651BB5430E8CD3899958330541
   - name: applicantOrgId
-    value: ""
+    value: "441225000000"
   - name: targetOrgId
-    value: ""
+    value: "441225000000"
   - name: targetOrgName
     value: 客户端占位名称-后端按机构ID覆盖
   - name: missingTargetOrgId

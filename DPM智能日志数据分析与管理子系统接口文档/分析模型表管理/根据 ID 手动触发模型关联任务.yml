@@ -17,10 +17,6 @@ http:
       {
         "id": 33
       }
-  auth:
-    type: bearer
-    token: "{{token}}"
-
 settings:
   encodeUrl: true
   timeout: 0

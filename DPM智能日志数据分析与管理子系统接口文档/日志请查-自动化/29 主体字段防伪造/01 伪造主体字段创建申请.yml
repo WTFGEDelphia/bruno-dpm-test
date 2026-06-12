@@ -30,10 +30,9 @@ http:
         "applicantAccountId": "forged-trusted-field-account-should-be-ignored",
         "applicantOrgId": "forged-trusted-field-org-should-be-ignored"
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

@@ -35,10 +35,9 @@ http:
         "startFinishTime": "",
         "endFinishTime": ""
       }
-  auth:
-    type: bearer
-    token: "{{token}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 settings:
   encodeUrl: true
   timeout: 0

@@ -11,10 +11,9 @@ info:
 http:
   method: POST
   url: "{{baseUrl}}/api/v1/log-requests/draft"
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

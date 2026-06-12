@@ -1,0 +1,26 @@
+info:
+  name: 分页查询组织
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/query-support/organizations/page"
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "sortType": 1
+      }
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
+
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

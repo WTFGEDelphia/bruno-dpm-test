@@ -20,10 +20,9 @@ http:
         "opinion": "申请人账号不应具备审批能力",
         "directiveAttachmentIds": []
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

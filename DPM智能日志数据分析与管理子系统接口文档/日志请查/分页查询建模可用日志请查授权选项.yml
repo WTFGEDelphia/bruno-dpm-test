@@ -1,0 +1,26 @@
+info:
+  name: 分页查询建模可用日志请查授权选项
+  type: http
+  seq: 19
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/authorizations/model-scope/options"
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "requestNo": "",
+        "targetOrgName": "",
+        "sortType": 1
+      }
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

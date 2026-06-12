@@ -18,10 +18,9 @@ http:
         type: file
         value:
           - files/fixtures/leader-directive-3.csv
-  auth:
-    type: bearer
-    token: "{{provinceToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

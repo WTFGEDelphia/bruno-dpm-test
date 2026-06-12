@@ -1,0 +1,26 @@
+info:
+  name: 查询待分配候选资源树
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/alarm-rule-resources/assignment-candidates/tree"
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
+  body:
+    type: json
+    data: |-
+      {
+        "dimension": "AREA",
+        "targetSubjectType": "USER",
+        "targetSubjectId": "",
+        "includeModule": false,
+        "includeAllNode": false
+      }
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

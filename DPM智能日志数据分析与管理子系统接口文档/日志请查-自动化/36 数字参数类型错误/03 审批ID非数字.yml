@@ -19,10 +19,9 @@ http:
         "decision": "不同意",
         "opinion": "审批 ID 非数字"
       }
-  auth:
-    type: bearer
-    token: "{{provinceToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

@@ -17,10 +17,9 @@ http:
       - name: note
         type: text
         value: missing-file-parameter
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

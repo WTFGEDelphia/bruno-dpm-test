@@ -22,10 +22,9 @@ http:
         "requestReason": "创建字段显式null校验-调取范围",
         "scopes": null
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

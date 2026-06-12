@@ -20,10 +20,9 @@ http:
         "opinion": "不同意办理",
         "directiveAttachmentIds": [999999]
       }
-  auth:
-    type: bearer
-    token: "{{provinceToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

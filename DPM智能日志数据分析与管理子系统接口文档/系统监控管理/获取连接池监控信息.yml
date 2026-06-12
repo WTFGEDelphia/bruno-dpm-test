@@ -8,10 +8,9 @@ info:
 http:
   method: POST
   url: "{{baseUrl}}/monitoring/connection-pool-stats"
-  auth:
-    type: bearer
-    token: "{{token}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 settings:
   encodeUrl: true
   timeout: 0

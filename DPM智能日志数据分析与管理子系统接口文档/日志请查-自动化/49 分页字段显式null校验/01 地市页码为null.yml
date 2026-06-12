@@ -18,10 +18,9 @@ http:
         "pageNum": null,
         "pageSize": 10
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

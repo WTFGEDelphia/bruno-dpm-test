@@ -23,10 +23,9 @@ http:
         "applicantOrgId": "forged-list-filter-org-should-be-ignored",
         "applicantName": "列表筛选权限隔离"
       }
-  auth:
-    type: bearer
-    token: "{{otherApplicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

@@ -18,10 +18,9 @@ http:
         "decision": "不同意",
         "opinion": "动作接口申请ID缺失-审批"
       }
-  auth:
-    type: bearer
-    token: "{{provinceToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

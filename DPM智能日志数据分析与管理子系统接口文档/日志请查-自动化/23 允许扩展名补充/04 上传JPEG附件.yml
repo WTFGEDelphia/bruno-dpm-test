@@ -18,10 +18,9 @@ http:
         type: file
         value:
           - files/fixtures/allowed-attachment.jpeg
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

@@ -19,10 +19,9 @@ http:
         "attachmentId": {{attachmentPermissionApplicationId}},
         "attachmentType": "APPLICATION"
       }
-  auth:
-    type: bearer
-    token: "{{otherApplicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests

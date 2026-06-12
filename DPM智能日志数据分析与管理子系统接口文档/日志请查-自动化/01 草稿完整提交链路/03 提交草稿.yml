@@ -31,10 +31,9 @@ http:
         "applicantAccountId": "forged-submit-applicant-account-should-be-ignored",
         "applicantOrgId": "forged-submit-applicant-org-should-be-ignored"
       }
-  auth:
-    type: bearer
-    token: "{{applicantToken}}"
-
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
 runtime:
   scripts:
     - type: tests
