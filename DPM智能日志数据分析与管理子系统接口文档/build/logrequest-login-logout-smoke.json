@@ -1,0 +1,206 @@
+[
+  {
+    "iterationIndex": 0,
+    "results": [
+      {
+        "test": {
+          "filename": "日志请查-自动化\\00 前置登录\\login-dpm.yml"
+        },
+        "request": {
+          "method": "POST",
+          "url": "https://172.20.64.29:22500/public_ws/sys/user/login",
+          "headers": {}
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "headers": {},
+          "url": "https://172.20.64.29/public_ws/sys/user/login",
+          "responseTime": 959,
+          "duration": 959,
+          "size": 80163
+        },
+        "error": null,
+        "status": "pass",
+        "assertionResults": [],
+        "testResults": [],
+        "preRequestTestResults": [],
+        "postResponseTestResults": [],
+        "shouldStopRunnerExecution": false,
+        "runDuration": 1.1404692,
+        "name": "login-dpm",
+        "path": "日志请查-自动化\\00 前置登录\\login-dpm.yml",
+        "iterationIndex": 0
+      },
+      {
+        "test": {
+          "filename": "日志请查-自动化\\00 前置登录\\login-sww.yml"
+        },
+        "request": {
+          "method": "POST",
+          "url": "https://172.20.64.29:22500/public_ws/sys/user/login",
+          "headers": {}
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "headers": {},
+          "url": "https://172.20.64.29/public_ws/sys/user/login",
+          "responseTime": 353,
+          "duration": 353,
+          "size": 80175
+        },
+        "error": null,
+        "status": "pass",
+        "assertionResults": [],
+        "testResults": [],
+        "preRequestTestResults": [],
+        "postResponseTestResults": [],
+        "shouldStopRunnerExecution": false,
+        "runDuration": 0.5841499,
+        "name": "login-sww",
+        "path": "日志请查-自动化\\00 前置登录\\login-sww.yml",
+        "iterationIndex": 0
+      },
+      {
+        "test": {
+          "filename": "日志请查-自动化\\00 前置登录\\login-wtf.yml"
+        },
+        "request": {
+          "method": "POST",
+          "url": "https://172.20.64.29:22500/public_ws/sys/user/login",
+          "headers": {}
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "headers": {},
+          "url": "https://172.20.64.29/public_ws/sys/user/login",
+          "responseTime": 98,
+          "duration": 98,
+          "size": 2556
+        },
+        "error": null,
+        "status": "pass",
+        "assertionResults": [],
+        "testResults": [],
+        "preRequestTestResults": [],
+        "postResponseTestResults": [],
+        "shouldStopRunnerExecution": false,
+        "runDuration": 0.4342085,
+        "name": "login-wtf",
+        "path": "日志请查-自动化\\00 前置登录\\login-wtf.yml",
+        "iterationIndex": 0
+      },
+      {
+        "test": {
+          "filename": "日志请查-自动化\\99 后置登出\\logout-dpm.yml"
+        },
+        "request": {
+          "method": "POST",
+          "url": "https://172.20.64.29:22500/public_ws/sys/user/logout",
+          "headers": {}
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "headers": {},
+          "url": "https://172.20.64.29/public_ws/sys/user/logout",
+          "responseTime": 51,
+          "duration": 51,
+          "size": 30
+        },
+        "error": null,
+        "status": "pass",
+        "assertionResults": [],
+        "testResults": [],
+        "preRequestTestResults": [],
+        "postResponseTestResults": [],
+        "shouldStopRunnerExecution": false,
+        "runDuration": 0.0645926,
+        "name": "logout-dpm",
+        "path": "日志请查-自动化\\99 后置登出\\logout-dpm.yml",
+        "iterationIndex": 0
+      },
+      {
+        "test": {
+          "filename": "日志请查-自动化\\99 后置登出\\logout-sww.yml"
+        },
+        "request": {
+          "method": "POST",
+          "url": "https://172.20.64.29:22500/public_ws/sys/user/logout",
+          "headers": {}
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "headers": {},
+          "url": "https://172.20.64.29/public_ws/sys/user/logout",
+          "responseTime": 68,
+          "duration": 68,
+          "size": 30
+        },
+        "error": null,
+        "status": "pass",
+        "assertionResults": [],
+        "testResults": [],
+        "preRequestTestResults": [],
+        "postResponseTestResults": [],
+        "shouldStopRunnerExecution": false,
+        "runDuration": 0.076187,
+        "name": "logout-sww",
+        "path": "日志请查-自动化\\99 后置登出\\logout-sww.yml",
+        "iterationIndex": 0
+      },
+      {
+        "test": {
+          "filename": "日志请查-自动化\\99 后置登出\\logout.yml"
+        },
+        "request": {
+          "method": "POST",
+          "url": "https://172.20.64.29:22500/public_ws/sys/user/logout",
+          "headers": {}
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "headers": {},
+          "url": "https://172.20.64.29/public_ws/sys/user/logout",
+          "responseTime": 58,
+          "duration": 58,
+          "size": 30
+        },
+        "error": null,
+        "status": "pass",
+        "assertionResults": [],
+        "testResults": [],
+        "preRequestTestResults": [],
+        "postResponseTestResults": [],
+        "shouldStopRunnerExecution": false,
+        "runDuration": 0.2071208,
+        "name": "logout",
+        "path": "日志请查-自动化\\99 后置登出\\logout.yml",
+        "iterationIndex": 0
+      }
+    ],
+    "summary": {
+      "totalRequests": 6,
+      "passedRequests": 6,
+      "failedRequests": 0,
+      "errorRequests": 0,
+      "skippedRequests": 0,
+      "totalAssertions": 0,
+      "passedAssertions": 0,
+      "failedAssertions": 0,
+      "totalTests": 0,
+      "passedTests": 0,
+      "failedTests": 0,
+      "totalPreRequestTests": 0,
+      "passedPreRequestTests": 0,
+      "failedPreRequestTests": 0,
+      "totalPostResponseTests": 0,
+      "passedPostResponseTests": 0,
+      "failedPostResponseTests": 0
+    }
+  }
+]

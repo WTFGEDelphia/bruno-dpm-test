@@ -1,0 +1,50 @@
+info:
+  name: 05 下载MinIO申请附件
+  type: http
+  seq: 5
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 附件
+    - MinIO
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/attachments/download"
+  body:
+    type: json
+    data: |-
+      {
+        "attachmentId": {{minioApplicationAttachmentId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        function env(name) {
+          return String(bru.getEnvVar(name) || "").trim();
+        }
+
+        const required = ["applicantToken", "minioEndpoint", "minioAccessKey", "minioSecretKey", "minioBucket"];
+        if (required.some(name => !env(name)) || !String(bru.getVar("minioApplicationAttachmentId") || "").trim()) {
+          bru.runner.skipRequest();
+        }
+    - type: tests
+      code: |-
+        test("下载 MinIO 申请附件返回文件流", () => {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getHeader("content-disposition")).to.contain("attachment;");
+          expect(res.getHeader("content-disposition")).to.contain("application-attachment-1.csv");
+          expect(res.getSize().body).to.be.greaterThan(0);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

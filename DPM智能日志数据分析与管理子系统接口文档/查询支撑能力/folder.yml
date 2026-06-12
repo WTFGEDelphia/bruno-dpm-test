@@ -1,0 +1,7 @@
+info:
+  name: 查询支撑能力
+  type: folder
+  seq: 23
+
+request:
+  auth: inherit

@@ -1,0 +1,27 @@
+info:
+  name: 查询日志请查目标组织候选树
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/target-organizations/tree"
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
+  body:
+    type: json
+    data: |-
+      {
+          "dimension": "AREA",
+          "systemType": "",
+          "accessStatus": "",
+          "includeModule": false,
+          "includeAllNode": false
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,7 @@
+info:
+  name: 日志请查目标组织候选
+  type: folder
+  seq: 26
+
+request:
+  auth: inherit

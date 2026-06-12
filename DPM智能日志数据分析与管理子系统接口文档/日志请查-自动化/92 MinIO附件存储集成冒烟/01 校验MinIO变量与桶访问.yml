@@ -1,0 +1,55 @@
+info:
+  name: 01 校验MinIO变量与桶访问
+  type: http
+  seq: 1
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 附件
+    - MinIO
+
+http:
+  method: GET
+  url: "{{minioEndpoint}}/{{minioBucket}}?list-type=2&max-keys=1"
+  auth:
+    type: awsv4
+    accessKeyId: "{{minioAccessKey}}"
+    secretAccessKey: "{{minioSecretKey}}"
+    sessionToken: "{{minioSessionToken}}"
+    service: s3
+    region: "{{minioAwsRegion}}"
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        function env(name) {
+          return String(bru.getEnvVar(name) || "").trim();
+        }
+
+        const required = ["minioEndpoint", "minioAccessKey", "minioSecretKey", "minioBucket"];
+        const missing = required.filter(name => !env(name));
+        if (missing.length) {
+          console.warn("跳过 MinIO 附件存储集成冒烟：请先在 environments/LogRequestAutomationLocal.yml 临时填写 MinIO 变量：" + missing.join(", ") + "；测试结束会自动清空 minio* 变量。");
+          bru.runner.skipRequest();
+        }
+
+        bru.setVar("minioAwsRegion", env("minioRegion") || "us-east-1");
+    - type: tests
+      code: |-
+        test("MinIO 变量有效且桶可访问", () => {
+          expect(res.getStatus()).to.equal(200);
+          const raw = res.getBody();
+          const text = typeof raw === "string" ? raw : JSON.stringify(raw || {});
+          expect(text).to.contain("ListBucketResult");
+          expect(text).to.contain(bru.getEnvVar("minioBucket"));
+          expect(text).to.not.contain(bru.getEnvVar("minioAccessKey"));
+          expect(text).to.not.contain(bru.getEnvVar("minioSecretKey"));
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

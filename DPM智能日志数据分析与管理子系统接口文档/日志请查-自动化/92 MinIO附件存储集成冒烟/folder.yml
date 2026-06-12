@@ -1,0 +1,12 @@
+info:
+  name: 92 MinIO附件存储集成冒烟
+  type: folder
+  seq: 92
+
+request:
+  auth: inherit
+
+docs: |-
+  P1/P2 日志请查附件 MinIO 存储集成冒烟。该目录用于在后端已配置 LOGREQUEST_ATTACHMENT_STORAGE_TYPE=minio 的环境中，验证申请附件上传、详情展示、下载、MinIO 桶内对象可见、删除与删除后拒绝下载。
+  运行前仅在 environments/LogRequestAutomationLocal.yml 临时填写 minioEndpoint、minioAccessKey、minioSecretKey、minioBucket，可选填写 minioRegion/minioSessionToken。
+  结束清理步骤会将 LogRequestAutomationLocal.yml 中的 minio* 变量持久化清空，真实 MinIO 凭据不要提交或保留在集合文件中。

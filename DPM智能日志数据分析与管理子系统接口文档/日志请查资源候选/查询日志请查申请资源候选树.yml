@@ -1,0 +1,28 @@
+info:
+  name: 查询日志请查申请资源候选树
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/resource-candidates/tree"
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
+  body:
+    type: json
+    data: |-
+      {
+        "dimension": "OTHER",
+        "systemType": "",
+        "accessStatus": "",
+        "targetOrgId": "441400000000",
+        "includeModule": false,
+        "includeAllNode": false
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

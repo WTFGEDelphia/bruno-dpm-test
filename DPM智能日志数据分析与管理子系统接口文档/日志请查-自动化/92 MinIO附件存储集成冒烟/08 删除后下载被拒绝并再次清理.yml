@@ -1,0 +1,77 @@
+info:
+  name: 08 删除后下载被拒绝并再次清理
+  type: http
+  seq: 8
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 附件
+    - MinIO
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/attachments/download"
+  body:
+    type: json
+    data: |-
+      {
+        "attachmentId": {{minioApplicationAttachmentId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        function clearMinioEnv() {
+          bru.setEnvVar("minioEndpoint", "", { persist: true });
+          bru.setEnvVar("minioAccessKey", "", { persist: true });
+          bru.setEnvVar("minioSecretKey", "", { persist: true });
+          bru.setEnvVar("minioBucket", "", { persist: true });
+          bru.setEnvVar("minioRegion", "", { persist: true });
+          bru.setEnvVar("minioSessionToken", "", { persist: true });
+        }
+
+        const hasToken = String(bru.getEnvVar("applicantToken") || "").trim();
+        const hasAttachmentId = String(bru.getVar("minioApplicationAttachmentId") || "").trim();
+        if (!hasToken || !hasAttachmentId) {
+          clearMinioEnv();
+          bru.runner.skipRequest();
+        }
+
+        clearMinioEnv();
+    - type: after-response
+      code: |-
+        bru.setEnvVar("minioEndpoint", "", { persist: true });
+        bru.setEnvVar("minioAccessKey", "", { persist: true });
+        bru.setEnvVar("minioSecretKey", "", { persist: true });
+        bru.setEnvVar("minioBucket", "", { persist: true });
+        bru.setEnvVar("minioRegion", "", { persist: true });
+        bru.setEnvVar("minioSessionToken", "", { persist: true });
+    - type: tests
+      code: |-
+        test("删除后不能下载 MinIO 申请附件且错误不泄露存储定位", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.not.equal(200);
+          expect(json.reason).to.contain("已删除");
+          const text = JSON.stringify(json);
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("storageBucket");
+          expect(text).to.not.contain("endpoint");
+          expect(text).to.not.contain("bucket");
+          expect(text).to.not.contain("objectName");
+          expect(text).to.not.contain("accessKey");
+          expect(text).to.not.contain("secretKey");
+          expect(text).to.not.contain("/Users/");
+          expect(text).to.not.contain("C:\\\\");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

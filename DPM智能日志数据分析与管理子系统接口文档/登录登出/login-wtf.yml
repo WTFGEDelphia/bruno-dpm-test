@@ -10,10 +10,9 @@ http:
     type: json
     data: |-
       {
-        "loginName": "wtf",
+        "loginName": "dpm",
         "password": "FeHtReFpWsxR4Lh99B/QlskCQ6wGL/jMJae19BP/qXkOqOx7sY9CATFj/P/kkn4ctx9n2D9NCOk3ARFoeifTLz1eZw/Ie3MWxlPL6FdTBQ4xneIMZFkasUyJSRM28g2gowd5FKkuj/LfoHF/zr8egUFFeaIDFS7HpOSK6WJta/I="
       }
-  auth: inherit
 
 runtime:
   scripts:

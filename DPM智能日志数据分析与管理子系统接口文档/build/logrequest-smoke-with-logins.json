@@ -1,0 +1,152 @@
+[
+  {
+    "iterationIndex": 0,
+    "results": [
+      {
+        "test": {
+          "filename": "登录登出\\login-dpm.yml"
+        },
+        "request": {
+          "method": "POST",
+          "url": "https://172.20.64.29:22500/public_ws/sys/user/login",
+          "headers": {}
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "headers": {},
+          "url": "https://172.20.64.29/public_ws/sys/user/login",
+          "responseTime": 160,
+          "duration": 160,
+          "size": 79753
+        },
+        "error": null,
+        "status": "pass",
+        "assertionResults": [],
+        "testResults": [],
+        "preRequestTestResults": [],
+        "postResponseTestResults": [],
+        "shouldStopRunnerExecution": false,
+        "runDuration": 0.3642372,
+        "name": "login-dpm",
+        "path": "登录登出\\login-dpm.yml",
+        "iterationIndex": 0
+      },
+      {
+        "test": {
+          "filename": "登录登出\\login-sww.yml"
+        },
+        "request": {
+          "method": "POST",
+          "url": "https://172.20.64.29:22500/public_ws/sys/user/login",
+          "headers": {}
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "headers": {},
+          "url": "https://172.20.64.29/public_ws/sys/user/login",
+          "responseTime": 150,
+          "duration": 150,
+          "size": 79561
+        },
+        "error": null,
+        "status": "pass",
+        "assertionResults": [],
+        "testResults": [],
+        "preRequestTestResults": [],
+        "postResponseTestResults": [],
+        "shouldStopRunnerExecution": false,
+        "runDuration": 0.2570389,
+        "name": "login-sww",
+        "path": "登录登出\\login-sww.yml",
+        "iterationIndex": 0
+      },
+      {
+        "test": {
+          "filename": "登录登出\\login-wtf.yml"
+        },
+        "request": {
+          "method": "POST",
+          "url": "https://172.20.64.29:22500/public_ws/sys/user/login",
+          "headers": {}
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "headers": {},
+          "url": "https://172.20.64.29/public_ws/sys/user/login",
+          "responseTime": 88,
+          "duration": 88,
+          "size": 47660
+        },
+        "error": null,
+        "status": "pass",
+        "assertionResults": [],
+        "testResults": [],
+        "preRequestTestResults": [],
+        "postResponseTestResults": [],
+        "shouldStopRunnerExecution": false,
+        "runDuration": 0.30514,
+        "name": "login-wtf",
+        "path": "登录登出\\login-wtf.yml",
+        "iterationIndex": 0
+      },
+      {
+        "test": {
+          "filename": "日志请查-自动化\\01 草稿完整提交链路\\01 初始化草稿.yml"
+        },
+        "request": {
+          "method": "POST",
+          "url": "https://172.20.64.29:22500/ilda/api/v1/log-requests/draft",
+          "headers": {}
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "headers": {},
+          "url": "https://172.20.64.29/ilda/api/v1/log-requests/draft",
+          "responseTime": 753,
+          "duration": 753,
+          "size": 66
+        },
+        "error": null,
+        "status": "pass",
+        "assertionResults": [],
+        "testResults": [
+          {
+            "description": "初始化草稿返回真实申请ID",
+            "status": "pass",
+            "uid": "cNa2Aj3J40SK3ev-476Mi"
+          }
+        ],
+        "preRequestTestResults": [],
+        "postResponseTestResults": [],
+        "shouldStopRunnerExecution": false,
+        "runDuration": 1.0478969,
+        "name": "01 初始化草稿",
+        "path": "日志请查-自动化\\01 草稿完整提交链路\\01 初始化草稿.yml",
+        "iterationIndex": 0
+      }
+    ],
+    "summary": {
+      "totalRequests": 4,
+      "passedRequests": 4,
+      "failedRequests": 0,
+      "errorRequests": 0,
+      "skippedRequests": 0,
+      "totalAssertions": 0,
+      "passedAssertions": 0,
+      "failedAssertions": 0,
+      "totalTests": 1,
+      "passedTests": 1,
+      "failedTests": 0,
+      "totalPreRequestTests": 0,
+      "passedPreRequestTests": 0,
+      "failedPreRequestTests": 0,
+      "totalPostResponseTests": 0,
+      "passedPostResponseTests": 0,
+      "failedPostResponseTests": 0
+    }
+  }
+]

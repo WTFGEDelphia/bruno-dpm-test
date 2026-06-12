@@ -1,0 +1,7 @@
+info:
+  name: 日志请查资源候选
+  type: folder
+  seq: 25
+
+request:
+  auth: inherit

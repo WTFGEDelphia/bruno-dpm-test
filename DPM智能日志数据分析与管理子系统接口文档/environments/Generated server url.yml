@@ -1,4 +1,21 @@
 name: Generated server url
 variables:
   - name: baseUrl
-    value: https://172.20.64.29:18080/ilda
+    value: http://127.0.0.1:8080/ilda
+    disabled: true
+  - name: baseUrl
+    value: http://127.0.0.1:8080/ilda
+  - name: provinceToken
+    value: 3bbfc8e0-90bc-4735-a0e1-35f4b8e94537
+  - name: applicantToken
+    value: e30f209c-f5ce-41f6-b4c1-7fa2eb9aeddb
+  - name: otherApplicantToken
+    value: ""
+  - name: applicantAccountId
+    value: A2C8AA9FFAC34B2C8D33211122DA62F0
+  - name: applicantOrgId
+    value: "440000000000"
+  - name: targetOrgId
+    value: "440000000000"
+  - name: host
+    value: https://172.20.64.31:22500

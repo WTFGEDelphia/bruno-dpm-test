@@ -1,0 +1,73 @@
+info:
+  name: 02 创建MinIO附件申请
+  type: http
+  seq: 2
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 附件
+    - MinIO
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/create"
+  body:
+    type: json
+    data: |-
+      {
+        "targetOrgId": "{{targetOrgId}}",
+        "targetOrgName": "{{targetOrgName}}",
+        "validDays": {{validDays}},
+        "urgent": false,
+        "requestReason": "{{requestReason}}-MinIO附件存储集成冒烟",
+        "scopes": [
+          {
+            "systemRange": "{{systemRange}}",
+            "logStartTime": "{{logStartTime}}",
+            "logEndTime": "{{logEndTime}}"
+          }
+        ]
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        function env(name) {
+          return String(bru.getEnvVar(name) || "").trim();
+        }
+
+        const required = ["applicantToken", "targetOrgId", "minioEndpoint", "minioAccessKey", "minioSecretKey", "minioBucket"];
+        if (required.some(name => !env(name))) {
+          bru.runner.skipRequest();
+        }
+    - type: tests
+      code: |-
+        test("创建 MinIO 附件申请成功", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data).to.be.a("number");
+          expect(json.data).to.be.greaterThan(0);
+          bru.setVar("minioAttachmentRequestId", String(json.data));
+        });
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: data
+        method: jsonq
+      variable:
+        name: minioAttachmentRequestId
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,60 @@
+info:
+  name: 06 MinIO桶内对象可见
+  type: http
+  seq: 6
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 附件
+    - MinIO
+
+http:
+  method: GET
+  url: "{{minioEndpoint}}/{{minioBucket}}?list-type=2&prefix={{minioObjectPrefix}}"
+  auth:
+    type: awsv4
+    accessKeyId: "{{minioAccessKey}}"
+    secretAccessKey: "{{minioSecretKey}}"
+    sessionToken: "{{minioSessionToken}}"
+    service: s3
+    region: "{{minioAwsRegion}}"
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        function env(name) {
+          return String(bru.getEnvVar(name) || "").trim();
+        }
+
+        const required = ["minioEndpoint", "minioAccessKey", "minioSecretKey", "minioBucket"];
+        const missing = required.filter(name => !env(name));
+        if (missing.length) {
+          bru.runner.skipRequest();
+        }
+
+        const requestId = String(bru.getVar("minioAttachmentRequestId") || "").trim();
+        if (!requestId) {
+          bru.runner.skipRequest();
+        }
+
+        bru.setVar("minioAwsRegion", env("minioRegion") || "us-east-1");
+        bru.setVar("minioObjectPrefix", "log-request/" + requestId + "/APPLICATION/");
+    - type: tests
+      code: |-
+        test("MinIO 桶内存在刚上传的申请附件对象", () => {
+          expect(res.getStatus()).to.equal(200);
+          const raw = res.getBody();
+          const text = typeof raw === "string" ? raw : JSON.stringify(raw || {});
+          expect(text).to.contain(bru.getVar("minioObjectPrefix"));
+          expect(text).to.contain("application-attachment-1.csv");
+          expect(text).to.not.contain(bru.getEnvVar("minioAccessKey"));
+          expect(text).to.not.contain(bru.getEnvVar("minioSecretKey"));
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

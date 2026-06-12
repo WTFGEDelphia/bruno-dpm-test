@@ -1,0 +1,25 @@
+info:
+  name: " /api/v1/log-requests/resource-candidates/tree"
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/resource-candidates/tree"
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
+  body:
+    type: json
+    data: |-
+      {
+          "dimension": "OTHER",
+          "includeModule": false,
+          "includeAllNode": true
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

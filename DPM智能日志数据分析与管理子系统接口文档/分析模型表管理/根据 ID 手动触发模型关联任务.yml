@@ -8,11 +8,14 @@ info:
 http:
   method: POST
   url: "{{baseUrl}}/analysisModel/run"
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
   body:
     type: json
     data: |-
       {
-        "id": 0
+        "id": 33
       }
   auth:
     type: bearer

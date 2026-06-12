@@ -1,0 +1,28 @@
+info:
+  name: 分页查询告警日志详情
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/alarms/log-details/page"
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
+  body:
+    type: json
+    data: |-
+      {
+        "pageNum": 1,
+        "pageSize": 10,
+        "object": {
+          "alarmTypeCode": "1ffa614f2131cedf41449aa8679bf18a",
+          "dataSource": "dpm-ilda"
+        }
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

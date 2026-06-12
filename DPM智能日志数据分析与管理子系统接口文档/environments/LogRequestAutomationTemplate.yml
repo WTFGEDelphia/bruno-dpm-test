@@ -44,3 +44,15 @@ variables:
     value: 2026-05-01 00:00:00
   - name: logEndTime
     value: 2026-05-02 00:00:00
+  - name: minioEndpoint
+    value: ""
+  - name: minioAccessKey
+    value: ""
+  - name: minioSecretKey
+    value: ""
+  - name: minioBucket
+    value: ""
+  - name: minioRegion
+    value: ""
+  - name: minioSessionToken
+    value: ""

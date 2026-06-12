@@ -1,0 +1,7 @@
+info:
+  name: 查询日志请查申请资源候选树
+  type: folder
+  seq: 24
+
+request:
+  auth: inherit

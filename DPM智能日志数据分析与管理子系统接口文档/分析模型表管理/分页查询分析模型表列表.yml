@@ -8,45 +8,20 @@ info:
 http:
   method: POST
   url: "{{baseUrl}}/analysisModel/list"
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
   body:
     type: json
     data: |-
       {
         "pageNum": 1,
         "pageSize": 10,
-        "filter": {},
-        "sort": [],
-        "sortType": 0,
-        "id": 0,
-        "modelCode": "",
-        "modelName": "",
-        "modelType": 0,
-        "description": "",
-        "ownerId": [],
-        "ownerLoginName": "",
-        "ownerUserName": "",
-        "orgId": "",
-        "orgIds": [],
-        "version": "",
-        "status": 0,
-        "algorithmTemplateId": 0,
-        "sourceTable": "",
-        "startCreatedTime": "",
-        "endCreatedTime": "",
-        "startUpdatedTime": "",
-        "endUpdatedTime": "",
-        "createdBy": "",
-        "updatedBy": "",
-        "dataScopeRegType": [],
-        "dataScopeRegRegion": [],
-        "startDataScopeStartDate": "",
-        "endDataScopeStartDate": "",
-        "startDataScopeEndDate": "",
-        "endDataScopeEndDate": "",
-        "needCount": false,
-        "isSolidified": 0,
-        "startDate": "",
-        "endDate": ""
+        "sortType": 2,
+        "needCount": true,
+        "sort": [
+          "createdTime"
+        ]
       }
   auth:
     type: bearer

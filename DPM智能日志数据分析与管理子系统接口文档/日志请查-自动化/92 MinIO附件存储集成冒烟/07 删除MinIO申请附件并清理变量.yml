@@ -1,0 +1,71 @@
+info:
+  name: 07 删除MinIO申请附件并清理变量
+  type: http
+  seq: 7
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 附件
+    - MinIO
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/attachments/delete"
+  body:
+    type: json
+    data: |-
+      {
+        "requestId": {{minioAttachmentRequestId}},
+        "attachmentId": {{minioApplicationAttachmentId}},
+        "attachmentType": "APPLICATION"
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        function clearMinioEnv() {
+          bru.setEnvVar("minioEndpoint", "", { persist: true });
+          bru.setEnvVar("minioAccessKey", "", { persist: true });
+          bru.setEnvVar("minioSecretKey", "", { persist: true });
+          bru.setEnvVar("minioBucket", "", { persist: true });
+          bru.setEnvVar("minioRegion", "", { persist: true });
+          bru.setEnvVar("minioSessionToken", "", { persist: true });
+        }
+
+        const hasToken = String(bru.getEnvVar("applicantToken") || "").trim();
+        const hasRuntimeIds = String(bru.getVar("minioAttachmentRequestId") || "").trim()
+          && String(bru.getVar("minioApplicationAttachmentId") || "").trim();
+        if (!hasToken || !hasRuntimeIds) {
+          clearMinioEnv();
+          bru.runner.skipRequest();
+        }
+
+        clearMinioEnv();
+    - type: after-response
+      code: |-
+        bru.setEnvVar("minioEndpoint", "", { persist: true });
+        bru.setEnvVar("minioAccessKey", "", { persist: true });
+        bru.setEnvVar("minioSecretKey", "", { persist: true });
+        bru.setEnvVar("minioBucket", "", { persist: true });
+        bru.setEnvVar("minioRegion", "", { persist: true });
+        bru.setEnvVar("minioSessionToken", "", { persist: true });
+    - type: tests
+      code: |-
+        test("删除 MinIO 申请附件成功", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+          expect(json.data).to.equal(true);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

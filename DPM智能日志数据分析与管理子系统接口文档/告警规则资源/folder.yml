@@ -1,0 +1,7 @@
+info:
+  name: 告警规则资源
+  type: folder
+  seq: 22
+
+request:
+  auth: inherit

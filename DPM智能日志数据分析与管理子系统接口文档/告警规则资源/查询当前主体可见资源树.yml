@@ -1,0 +1,26 @@
+info:
+  name: 查询当前主体可见资源树
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/alarm-rule-resources/visible/tree"
+  headers:
+    - name: Cookie
+      value: tokenId={{applicantToken}}
+  body:
+    type: json
+    data: |-
+      {
+        "dimension": "AREA",
+        "includeModule": false,
+        "includeAllNode": false
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

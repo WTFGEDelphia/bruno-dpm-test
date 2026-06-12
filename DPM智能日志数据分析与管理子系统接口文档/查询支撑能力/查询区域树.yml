@@ -1,0 +1,29 @@
+info:
+  name: 查询区域树
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/query-support/areas/tree"
+  headers:
+    - name: Cookie
+      value: tokenId={{provinceToken}}
+  body:
+    type: json
+    data: |-
+      {
+        "areaCode": "440000000000",
+        "filterByAreaCode": true
+      }
+
+runtime:
+  variables:
+    - name: token
+      value: "{{provinceToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,74 @@
+info:
+  name: 04 查询MinIO附件详情
+  type: http
+  seq: 4
+  tags:
+    - 日志请查
+    - 自动化
+    - P1
+    - 附件
+    - MinIO
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/log-requests/detail"
+  body:
+    type: json
+    data: |-
+      {
+        "id": {{minioAttachmentRequestId}}
+      }
+  auth:
+    type: bearer
+    token: "{{applicantToken}}"
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        function env(name) {
+          return String(bru.getEnvVar(name) || "").trim();
+        }
+
+        const required = ["applicantToken", "minioEndpoint", "minioAccessKey", "minioSecretKey", "minioBucket"];
+        const hasRuntimeIds = String(bru.getVar("minioAttachmentRequestId") || "").trim()
+          && String(bru.getVar("minioApplicationAttachmentId") || "").trim();
+        if (required.some(name => !env(name)) || !hasRuntimeIds) {
+          bru.runner.skipRequest();
+        }
+    - type: tests
+      code: |-
+        test("详情包含已上传申请附件且不暴露存储定位", () => {
+          expect(res.getStatus()).to.equal(200);
+          const json = res.getBody();
+          expect(json.code).to.equal(200);
+          expect(["success", "成功"]).to.include(json.reason);
+
+          const attachmentId = Number(bru.getVar("minioApplicationAttachmentId"));
+          const attachments = json.data.attachments || [];
+          const matched = attachments.find(item => item.id === attachmentId);
+          expect(matched, "详情应包含刚上传的附件").to.exist;
+          expect(matched.attachmentType).to.equal("APPLICATION");
+          expect(matched.fileName).to.equal("application-attachment-1.csv");
+          expect(matched.deleted).to.not.equal(true);
+          expect(matched.downloadable).to.not.equal(false);
+
+          const text = JSON.stringify(json.data);
+          expect(text).to.not.contain("storagePath");
+          expect(text).to.not.contain("storageBucket");
+          expect(text).to.not.contain("endpoint");
+          expect(text).to.not.contain("bucket");
+          expect(text).to.not.contain("objectName");
+          expect(text).to.not.contain("accessKey");
+          expect(text).to.not.contain("secretKey");
+          expect(text).to.not.contain("/Users/");
+          expect(text).to.not.contain("C:\\\\");
+
+          bru.setVar("minioObjectPrefix", "log-request/" + bru.getVar("minioAttachmentRequestId") + "/APPLICATION/");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
